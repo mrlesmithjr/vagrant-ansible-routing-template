@@ -447,6 +447,190 @@ N E2 192.168.41.0/24       [10/20] tag: 0
 N E2 192.168.51.0/24       [10/20] tag: 0
                            via 192.168.250.105, eth1
 ````
+
+If you configure this environment and set quagga_enable_bgpd: true and then run the playbook.yml your ip route should look something similar to below. (This example shows a r5 which is not included in the nodes.yml)
+````
+vagrant@r1:/vagrant$ ip route
+default via 10.0.2.2 dev eth0
+1.1.1.0/24 dev eth6  proto kernel  scope link  src 1.1.1.10
+2.2.2.0/24 via 192.168.12.12 dev eth2  proto zebra  metric 1
+3.3.3.0/24 via 192.168.31.13 dev eth5  proto zebra  metric 1
+4.4.4.0/24 via 192.168.14.14 dev eth3  proto zebra  metric 1
+5.5.5.0/24 via 192.168.15.15 dev eth4  proto zebra  metric 1
+10.0.2.0/24 dev eth0  proto kernel  scope link  src 10.0.2.15
+192.168.12.0/24 dev eth2  proto kernel  scope link  src 192.168.12.11
+192.168.14.0/24 dev eth3  proto kernel  scope link  src 192.168.14.11
+192.168.15.0/24 dev eth4  proto kernel  scope link  src 192.168.15.11
+192.168.23.0/24 via 192.168.12.12 dev eth2  proto zebra  metric 1
+192.168.31.0/24 dev eth5  proto kernel  scope link  src 192.168.31.11
+192.168.41.0/24 via 192.168.14.14 dev eth3  proto zebra  metric 1
+192.168.51.0/24 via 192.168.15.15 dev eth4  proto zebra  metric 1
+192.168.250.0/24 dev eth1  proto kernel  scope link  src 192.168.250.101
+````
+If you connect to the bgpd daemon and run some commands they should look similar to below.
+````
+telnet localhost 2605
+````
+quagga/quagga (username/password)
+````
+r1# sh run
+
+Current configuration:
+!
+hostname r1
+password 8 8tUme4xaGtr1g
+enable password 8 /CPbwRlW6gcro
+log file /var/log/quagga/bgpd.log
+log stdout
+log syslog
+service password-encryption
+!
+router bgp 123
+ bgp router-id 1.1.1.1
+ bgp log-neighbor-changes
+ redistribute kernel
+ redistribute connected
+ neighbor 192.168.12.12 remote-as 123
+ neighbor 192.168.12.12 next-hop-self
+ neighbor 192.168.12.12 soft-reconfiguration inbound
+ neighbor 192.168.14.14 remote-as 141
+ neighbor 192.168.14.14 next-hop-self
+ neighbor 192.168.14.14 soft-reconfiguration inbound
+ neighbor 192.168.15.15 remote-as 151
+ neighbor 192.168.15.15 next-hop-self
+ neighbor 192.168.15.15 soft-reconfiguration inbound
+ neighbor 192.168.31.13 remote-as 123
+ neighbor 192.168.31.13 next-hop-self
+ neighbor 192.168.31.13 soft-reconfiguration inbound
+!
+line vty
+!
+end
+````
+````
+r1# sh ip bgp
+BGP table version is 0, local router ID is 1.1.1.1
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal,
+              r RIB-failure, S Stale, R Removed
+Origin codes: i - IGP, e - EGP, ? - incomplete
+
+   Network          Next Hop            Metric LocPrf Weight Path
+*  0.0.0.0          192.168.15.15            0             0 151 ?
+* i                 192.168.31.13            0    100      0 ?
+*                   192.168.14.14            0             0 141 ?
+* i                 192.168.12.12            0    100      0 ?
+*>                  10.0.2.2                 0         32768 ?
+*> 1.1.1.0/24       0.0.0.0                  1         32768 ?
+*>i2.2.2.0/24       192.168.12.12            1    100      0 ?
+*>i3.3.3.0/24       192.168.31.13            1    100      0 ?
+*> 4.4.4.0/24       192.168.14.14            1             0 141 ?
+*> 5.5.5.0/24       192.168.15.15            1             0 151 ?
+*  10.0.2.0/24      192.168.15.15            1             0 151 ?
+* i                 192.168.31.13            1    100      0 ?
+*                   192.168.14.14            1             0 141 ?
+* i                 192.168.12.12            1    100      0 ?
+*>                  0.0.0.0                  1         32768 ?
+*  127.0.0.0        192.168.15.15            1             0 151 ?
+*>                  192.168.14.14            1             0 141 ?
+* i192.168.12.0     192.168.12.12            1    100      0 ?
+*>                  0.0.0.0                  1         32768 ?
+*  192.168.14.0     192.168.14.14            1             0 141 ?
+*>                  0.0.0.0                  1         32768 ?
+*  192.168.15.0     192.168.15.15            1             0 151 ?
+*>                  0.0.0.0                  1         32768 ?
+* i192.168.23.0     192.168.31.13            1    100      0 ?
+*>i                 192.168.12.12            1    100      0 ?
+* i192.168.31.0     192.168.31.13            1    100      0 ?
+*                   192.168.14.14            1             0 141 ?
+*>                  0.0.0.0                  1         32768 ?
+*> 192.168.41.0     192.168.14.14            1             0 141 ?
+*> 192.168.51.0     192.168.15.15            1             0 151 ?
+*  192.168.250.0    192.168.15.15            1             0 151 ?
+* i                 192.168.31.13            1    100      0 ?
+*                   192.168.14.14            1             0 141 ?
+* i                 192.168.12.12            1    100      0 ?
+*>                  0.0.0.0                  1         32768 ?
+
+Total number of prefixes 16
+````
+r1# sh ip bgp neighbors
+BGP neighbor is 192.168.12.12, remote AS 123, local AS 123, internal link
+  BGP version 4, remote router ID 2.2.2.2
+  BGP state = Established, up for 00:19:37
+  Last read 00:00:37, hold time is 180, keepalive interval is 60 seconds
+  Neighbor capabilities:
+    4 Byte AS: advertised and received
+    Route refresh: advertised and received(old & new)
+    Address family IPv4 Unicast: advertised and received
+  Message statistics:
+    Inq depth is 0
+    Outq depth is 0
+                         Sent       Rcvd
+    Opens:                  1          1
+    Notifications:          0          0
+    Updates:                4          2
+    Keepalives:            21         20
+    Route Refresh:          0          0
+    Capability:             0          0
+    Total:                 26         23
+  Minimum time between advertisement runs is 5 seconds
+
+ For address family: IPv4 Unicast
+  Inbound soft reconfiguration allowed
+  NEXT_HOP is always this router
+  Community attribute sent to this neighbor(both)
+  6 accepted prefixes
+
+  Connections established 1; dropped 0
+  Last reset never
+Local host: 192.168.12.11, Local port: 6816
+Foreign host: 192.168.12.12, Foreign port: 179
+Nexthop: 192.168.12.11
+Nexthop global: fe80::a00:27ff:fe21:27d5
+Nexthop local: ::
+BGP connection: non shared network
+Read thread: on  Write thread: off
+
+BGP neighbor is 192.168.14.14, remote AS 141, local AS 123, external link
+  BGP version 4, remote router ID 4.4.4.4
+  BGP state = Established, up for 00:19:36
+  Last read 00:00:36, hold time is 180, keepalive interval is 60 seconds
+  Neighbor capabilities:
+    4 Byte AS: advertised and received
+    Route refresh: advertised and received(old & new)
+    Address family IPv4 Unicast: advertised and received
+  Message statistics:
+    Inq depth is 0
+    Outq depth is 0
+                         Sent       Rcvd
+    Opens:                  1          1
+    Notifications:          0          0
+    Updates:                5          2
+    Keepalives:            21         20
+    Route Refresh:          0          0
+    Capability:             0          0
+    Total:                 27         23
+  Minimum time between advertisement runs is 30 seconds
+
+ For address family: IPv4 Unicast
+  Inbound soft reconfiguration allowed
+ --More--
+ ````
+ ````
+ r1# sh ip bgp sum
+BGP router identifier 1.1.1.1, local AS number 123
+RIB entries 29, using 3248 bytes of memory
+Peers 4, using 18 KiB of memory
+
+Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+192.168.12.12   4   123      24      27        0    0    0 00:20:21        6
+192.168.14.14   4   141      24      28        0    0    0 00:20:20        8
+192.168.15.15   4   151      24      28        0    0    0 00:20:19        7
+192.168.31.13   4   123      24      27        0    0    0 00:20:19        6
+
+Total number of neighbors 4
+````
+
 License
 -------
 
