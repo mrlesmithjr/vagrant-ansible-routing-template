@@ -274,7 +274,7 @@ ansible-galaxy install mrlesmithjr.bootstrap
 ansible-galaxy install mrlesmithjr.base
 ````
 
-If you configure this environment and set quagga_enable_ospfd: true and then run the playbook.yml your ip route should look something similar to below.
+If you configure this environment and set quagga_enable_ospfd: true and then run the playbook.yml your ip route should look something similar to below. (This example shows a r5 which is not included in the nodes.yml)
 ````
 vagrant@r1:/vagrant$ ip route
 default via 10.0.2.2 dev eth0
@@ -294,6 +294,158 @@ default via 10.0.2.2 dev eth0
 192.168.41.0/24 via 192.168.250.104 dev eth1  proto zebra  metric 20
 192.168.51.0/24 via 192.168.250.105 dev eth1  proto zebra  metric 20
 192.168.250.0/24 dev eth1  proto kernel  scope link  src 192.168.250.101
+````
+And if you were to telnet to the ospfd daemon and run sh ip ospf neighbors
+````
+r1# sh ip ospf neighbor
+
+    Neighbor ID Pri State           Dead Time Address         Interface            RXmtL RqstL DBsmL
+192.168.250.102   1 2-Way/DROther     36.863s 192.168.250.102 eth1:192.168.250.101     0     0     0
+192.168.250.103   1 2-Way/DROther     36.997s 192.168.250.103 eth1:192.168.250.101     0     0     0
+192.168.250.104   1 Full/Backup       36.865s 192.168.250.104 eth1:192.168.250.101     0     0     0
+192.168.250.105   1 Full/DR           36.900s 192.168.250.105 eth1:192.168.250.101     0     0     0
+````
+Additional sh ip ospf commands.
+````
+r1# sh ip ospf border-routers
+============ OSPF router routing table =============
+R    192.168.250.102       [10] area: 0.0.0.51, ASBR
+                           via 192.168.250.102, eth1
+R    192.168.250.103       [10] area: 0.0.0.51, ASBR
+                           via 192.168.250.103, eth1
+R    192.168.250.104       [10] area: 0.0.0.51, ASBR
+                           via 192.168.250.104, eth1
+R    192.168.250.105       [10] area: 0.0.0.51, ASBR
+                           via 192.168.250.105, eth1
+````
+````
+r1# sh ip ospf database
+
+       OSPF Router with ID (192.168.250.101)
+
+                Router Link States (Area 0.0.0.51)
+
+Link ID         ADV Router      Age  Seq#       CkSum  Link count
+192.168.250.101 192.168.250.101  708 0x80000004 0xac6d 1
+192.168.250.102 192.168.250.102  709 0x80000004 0xaa6c 1
+192.168.250.103 192.168.250.103  709 0x80000004 0xa86b 1
+192.168.250.104 192.168.250.104  708 0x80000007 0xa06d 1
+192.168.250.105 192.168.250.105  708 0x80000006 0xa06b 1
+
+                Net Link States (Area 0.0.0.51)
+
+Link ID         ADV Router      Age  Seq#       CkSum
+192.168.250.105 192.168.250.105  708 0x80000004 0x9e16
+
+                AS External Link States
+
+Link ID         ADV Router      Age  Seq#       CkSum  Route
+1.1.1.0         192.168.250.101  708 0x80000003 0x3ab5 E2 1.1.1.0/24 [0x0]
+2.2.2.0         192.168.250.102  709 0x80000003 0x10db E2 2.2.2.0/24 [0x0]
+3.3.3.0         192.168.250.103  709 0x80000003 0xe502 E2 3.3.3.0/24 [0x0]
+4.4.4.0         192.168.250.104  708 0x80000006 0xb52b E2 4.4.4.0/24 [0x0]
+5.5.5.0         192.168.250.105  708 0x80000005 0x8d50 E2 5.5.5.0/24 [0x0]
+10.0.2.0        192.168.250.101  708 0x80000003 0xc521 E2 10.0.2.0/24 [0x0]
+10.0.2.0        192.168.250.102  709 0x80000003 0xbf26 E2 10.0.2.0/24 [0x0]
+10.0.2.0        192.168.250.103  709 0x80000003 0xb92b E2 10.0.2.0/24 [0x0]
+10.0.2.0        192.168.250.104  708 0x80000005 0xaf32 E2 10.0.2.0/24 [0x0]
+10.0.2.0        192.168.250.105  708 0x80000005 0xa937 E2 10.0.2.0/24 [0x0]
+192.168.12.0    192.168.250.101  708 0x80000003 0x2855 E2 192.168.12.0/24 [0x0]
+192.168.12.0    192.168.250.102  709 0x80000003 0x225a E2 192.168.12.0/24 [0x0]
+192.168.14.0    192.168.250.101  708 0x80000003 0x1269 E2 192.168.14.0/24 [0x0]
+192.168.14.0    192.168.250.104  708 0x80000005 0xfb7a E2 192.168.14.0/24 [0x0]
+192.168.15.0    192.168.250.101  708 0x80000004 0x0574 E2 192.168.15.0/24 [0x0]
+192.168.15.0    192.168.250.105  708 0x80000005 0xea89 E2 192.168.15.0/24 [0x0]
+192.168.23.0    192.168.250.102  709 0x80000003 0xa8c8 E2 192.168.23.0/24 [0x0]
+192.168.23.0    192.168.250.103  709 0x80000003 0xa2cd E2 192.168.23.0/24 [0x0]
+192.168.31.0    192.168.250.101  708 0x80000003 0x5614 E2 192.168.31.0/24 [0x0]
+192.168.31.0    192.168.250.103  709 0x80000003 0x4a1e E2 192.168.31.0/24 [0x0]
+192.168.31.0    192.168.250.104  708 0x80000005 0x4025 E2 192.168.31.0/24 [0x0]
+192.168.41.0    192.168.250.104  708 0x80000005 0xd189 E2 192.168.41.0/24 [0x0]
+192.168.51.0    192.168.250.105  708 0x80000005 0x5df2 E2 192.168.51.0/24 [0x0]
+````
+````
+r1# sh ip ospf interface
+eth0 is up
+  ifindex 2, MTU 1500 bytes, BW 0 Kbit <UP,BROADCAST,RUNNING,MULTICAST>
+  OSPF not enabled on this interface
+eth1 is up
+  ifindex 3, MTU 1500 bytes, BW 0 Kbit <UP,BROADCAST,RUNNING,MULTICAST>
+  Internet Address 192.168.250.101/24, Broadcast 192.168.250.255, Area 0.0.0.51
+  MTU mismatch detection:enabled
+  Router ID 192.168.250.101, Network Type BROADCAST, Cost: 10
+  Transmit Delay is 1 sec, State DROther, Priority 1
+  Designated Router (ID) 192.168.250.105, Interface Address 192.168.250.105
+  Backup Designated Router (ID) 192.168.250.104, Interface Address 192.168.250.104
+  Multicast group memberships: OSPFAllRouters
+  Timer intervals configured, Hello 10s, Dead 40s, Wait 40s, Retransmit 5
+    Hello due in 3.119s
+  Neighbor Count is 4, Adjacent neighbor count is 2
+eth2 is up
+  ifindex 4, MTU 1500 bytes, BW 0 Kbit <UP,BROADCAST,RUNNING,MULTICAST>
+  OSPF not enabled on this interface
+eth3 is up
+  ifindex 5, MTU 1500 bytes, BW 0 Kbit <UP,BROADCAST,RUNNING,MULTICAST>
+  OSPF not enabled on this interface
+eth4 is up
+  ifindex 6, MTU 1500 bytes, BW 0 Kbit <UP,BROADCAST,RUNNING,MULTICAST>
+  OSPF not enabled on this interface
+eth5 is up
+  ifindex 7, MTU 1500 bytes, BW 0 Kbit <UP,BROADCAST,RUNNING,MULTICAST>
+  OSPF not enabled on this interface
+eth6 is up
+  ifindex 8, MTU 1500 bytes, BW 0 Kbit <UP,BROADCAST,RUNNING,MULTICAST>
+  OSPF not enabled on this interface
+lo is up
+  ifindex 1, MTU 65536 bytes, BW 0 Kbit <UP,LOOPBACK,RUNNING>
+  OSPF not enabled on this interface
+````
+````
+r1# sh ip ospf route
+============ OSPF network routing table ============
+N    192.168.250.0/24      [10] area: 0.0.0.51
+                           directly attached to eth1
+
+============ OSPF router routing table =============
+R    192.168.250.102       [10] area: 0.0.0.51, ASBR
+                           via 192.168.250.102, eth1
+R    192.168.250.103       [10] area: 0.0.0.51, ASBR
+                           via 192.168.250.103, eth1
+R    192.168.250.104       [10] area: 0.0.0.51, ASBR
+                           via 192.168.250.104, eth1
+R    192.168.250.105       [10] area: 0.0.0.51, ASBR
+                           via 192.168.250.105, eth1
+
+============ OSPF external routing table ===========
+N E2 2.2.2.0/24            [10/20] tag: 0
+                           via 192.168.250.102, eth1
+N E2 3.3.3.0/24            [10/20] tag: 0
+                           via 192.168.250.103, eth1
+N E2 4.4.4.0/24            [10/20] tag: 0
+                           via 192.168.250.104, eth1
+N E2 5.5.5.0/24            [10/20] tag: 0
+                           via 192.168.250.105, eth1
+N E2 10.0.2.0/24           [10/20] tag: 0
+                           via 192.168.250.102, eth1
+                           via 192.168.250.103, eth1
+                           via 192.168.250.104, eth1
+                           via 192.168.250.105, eth1
+N E2 192.168.12.0/24       [10/20] tag: 0
+                           via 192.168.250.102, eth1
+N E2 192.168.14.0/24       [10/20] tag: 0
+                           via 192.168.250.104, eth1
+N E2 192.168.15.0/24       [10/20] tag: 0
+                           via 192.168.250.105, eth1
+N E2 192.168.23.0/24       [10/20] tag: 0
+                           via 192.168.250.102, eth1
+                           via 192.168.250.103, eth1
+N E2 192.168.31.0/24       [10/20] tag: 0
+                           via 192.168.250.103, eth1
+                           via 192.168.250.104, eth1
+N E2 192.168.41.0/24       [10/20] tag: 0
+                           via 192.168.250.104, eth1
+N E2 192.168.51.0/24       [10/20] tag: 0
+                           via 192.168.250.105, eth1
 ````
 License
 -------
