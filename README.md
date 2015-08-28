@@ -10,8 +10,8 @@ The following packages must be installed on your Host you intend on running all 
 
 From:
 ````
-#  config.vm.provision :shell, path: "bootstrap.sh"
-#      node.vm.provision :shell, path: "bootstrap_ansible.sh"
+
+#  node.vm.provision :shell, path: "bootstrap_ansible.sh"
 
 config.vm.provision :ansible do |ansible|
   ansible.playbook = "bootstrap.yml"
@@ -19,8 +19,7 @@ end
 ````
 To:
 ````
-  config.vm.provision :shell, path: "bootstrap.sh"
-      node.vm.provision :shell, path: "bootstrap_ansible.sh"
+  node.vm.provision :shell, path: "bootstrap_ansible.sh"
 
 #config.vm.provision :ansible do |ansible|
 #  ansible.playbook = "bootstrap.yml"
