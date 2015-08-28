@@ -274,6 +274,27 @@ ansible-galaxy install mrlesmithjr.bootstrap
 ansible-galaxy install mrlesmithjr.base
 ````
 
+If you configure this environment and set quagga_enable_ospfd: true and then run the playbook.yml your ip route should look something similar to below.
+````
+vagrant@r1:/vagrant$ ip route
+default via 10.0.2.2 dev eth0
+1.1.1.0/24 dev eth6  proto kernel  scope link  src 1.1.1.10
+2.2.2.0/24 via 192.168.250.102 dev eth1  proto zebra  metric 20
+3.3.3.0/24 via 192.168.250.103 dev eth1  proto zebra  metric 20
+4.4.4.0/24 via 192.168.250.104 dev eth1  proto zebra  metric 20
+5.5.5.0/24 via 192.168.250.105 dev eth1  proto zebra  metric 20
+10.0.2.0/24 dev eth0  proto kernel  scope link  src 10.0.2.15
+192.168.12.0/24 dev eth2  proto kernel  scope link  src 192.168.12.11
+192.168.14.0/24 dev eth3  proto kernel  scope link  src 192.168.14.11
+192.168.15.0/24 dev eth4  proto kernel  scope link  src 192.168.15.11
+192.168.23.0/24  proto zebra  metric 20
+	nexthop via 192.168.250.102  dev eth1 weight 1
+	nexthop via 192.168.250.103  dev eth1 weight 1
+192.168.31.0/24 dev eth5  proto kernel  scope link  src 192.168.31.11
+192.168.41.0/24 via 192.168.250.104 dev eth1  proto zebra  metric 20
+192.168.51.0/24 via 192.168.250.105 dev eth1  proto zebra  metric 20
+192.168.250.0/24 dev eth1  proto kernel  scope link  src 192.168.250.101
+````
 License
 -------
 
