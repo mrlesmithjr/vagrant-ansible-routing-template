@@ -553,6 +553,7 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
 
 Total number of prefixes 16
 ````
+````
 r1# sh ip bgp neighbors
 BGP neighbor is 192.168.12.12, remote AS 123, local AS 123, internal link
   BGP version 4, remote router ID 2.2.2.2
