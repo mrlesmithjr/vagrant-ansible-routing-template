@@ -1,0 +1,40 @@
+---
+config_quagga: true
+quagga_bgp_router_configs:
+  - name: r1
+    local_as: 123
+    router_id: 1.1.1.1
+    neighbors:
+      - neighbor: 192.168.12.12
+        remote_as: 123
+      - neighbor: 192.168.31.13
+        remote_as: 123
+      - neighbor: 192.168.14.14
+        remote_as: 141
+  - name: r2
+    local_as: 123
+    router_id: 2.2.2.2
+    neighbors:
+      - neighbor: 192.168.12.11
+        remote_as: 123
+      - neighbor: 192.168.23.13
+        remote_as: 123
+  - name: r3
+    local_as: 123
+    router_id: 3.3.3.3
+    neighbors:
+      - neighbor: 192.168.23.12
+        remote_as: 123
+      - neighbor: 192.168.31.11
+        remote_as: 123
+  - name: r4
+    local_as: 141
+    router_id: 4.4.4.4
+    neighbors:
+      - neighbor: 192.168.14.11
+        remote_as: 123
+quagga_enable_bgpd: false
+quagga_enable_ospfd: false
+quagga_enable_password: quagga
+quagga_ospf_routerid: '{{ ansible_eth1.ipv4.address }}'
+quagga_password: quagga

@@ -1,0 +1,12 @@
+---
+- hosts: quagga-routers
+  remote_user: vagrant
+  sudo: true
+  vars:
+  roles:
+    - mrlesmithjr.quagga
+  tasks:
+    - name: installing packages
+      apt: name={{ item }} state=present
+      with_items:
+        - traceroute
