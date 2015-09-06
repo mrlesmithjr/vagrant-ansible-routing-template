@@ -12,7 +12,7 @@
     - ip: 192.168.31.11
       desc: 03-to-01
     - ip: 1.1.1.10
-      desc: 'Network to Advertise'
+      desc: '1-1-1'
 - name: r2
   box: ubuntu/trusty64
   mem: 512
@@ -24,7 +24,7 @@
     - ip: 192.168.12.12
       desc: 01-to-02
     - ip: 2.2.2.10
-      desc: 'Network to Advertise'
+      desc: '2-2-2'
 - name: r3
   box: ubuntu/trusty64
   mem: 512
@@ -36,7 +36,7 @@
     - ip: 192.168.23.13
       desc: 02-to-03
     - ip: 3.3.3.10
-      desc: 'Network to Advertise'
+      desc: '3-3-3'
 - name: r4
   box: ubuntu/trusty64
   mem: 512
@@ -50,4 +50,4 @@
     - ip: 192.168.41.14
       desc: utopia
     - ip: 4.4.4.10
-      desc: 'Network to Advertise'
+      desc: '4-4-4'
