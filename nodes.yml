@@ -3,51 +3,93 @@
   box: ubuntu/trusty64
   mem: 512
   cpus: 1
-  priv_ip_1: 192.168.250.101  #HostOnly interface
-  priv_ips:  #Internal only interfaces
+  ansible_ssh_host_ip: 192.168.250.101  #HostOnly interface
+  interfaces:  #Internal only interfaces
     - ip: 192.168.12.11
-      desc: 01-to-02
+      auto_config: "True"
+      network_name: 01-to-02
+      method: static
+      type: private_network
     - ip: 192.168.14.11
-      desc: 01-to-04
+      auto_config: "True"
+      network_name: 01-to-04
+      method: static
+      type: private_network
     - ip: 192.168.31.11
-      desc: 03-to-01
+      auto_config: "True"
+      network_name: 03-to-01
+      method: static
+      type: private_network
     - ip: 1.1.1.10
-      desc: '1-1-1'
+      auto_config: "True"
+      network_name: 1-1-1
+      method: static
+      type: private_network
 - name: r2
   box: ubuntu/trusty64
   mem: 512
   cpus: 1
-  priv_ip_1: 192.168.250.102  #HostOnly interface
-  priv_ips:  #Internal only interfaces
+  ansible_ssh_host_ip: 192.168.250.102  #HostOnly interface
+  interfaces:  #Internal only interfaces
     - ip: 192.168.23.12
-      desc: 02-to-03
+      auto_config: "True"
+      network_name: 02-to-03
+      method: static
+      type: private_network
     - ip: 192.168.12.12
-      desc: 01-to-02
+      auto_config: "True"
+      network_name: 01-to-02
+      method: static
+      type: private_network
     - ip: 2.2.2.10
-      desc: '2-2-2'
+      auto_config: "True"
+      network_name: 2-2-2
+      method: static
+      type: private_network
 - name: r3
   box: ubuntu/trusty64
   mem: 512
   cpus: 1
-  priv_ip_1: 192.168.250.103  #HostOnly interface
-  priv_ips:  #Internal only interfaces
+  ansible_ssh_host_ip: 192.168.250.103  #HostOnly interface
+  interfaces:  #Internal only interfaces
     - ip: 192.168.31.13
-      desc: 03-to-01
+      auto_config: "True"
+      network_name: 03-to-01
+      method: static
+      type: private_network
     - ip: 192.168.23.13
-      desc: 02-to-03
+      auto_config: "True"
+      network_name: 02-to-03
+      method: static
+      type: private_network
     - ip: 3.3.3.10
-      desc: '3-3-3'
+      auto_config: "True"
+      network_name: 3-3-3
+      method: static
+      type: private_network
 - name: r4
   box: ubuntu/trusty64
   mem: 512
   cpus: 1
-  priv_ip_1: 192.168.250.104  #HostOnly interface
-  priv_ips:  #Internal only interfaces
+  ansible_ssh_host_ip: 192.168.250.104  #HostOnly interface
+  interfaces:  #Internal only interfaces
     - ip: 192.168.14.14
-      desc: 01-to-04
+      auto_config: "True"
+      network_name: 01-to-04
+      method: static
+      type: private_network
     - ip: 192.168.31.14
-      desc: 03-to-01
+      auto_config: "True"
+      network_name: 03-to-01
+      method: static
+      type: private_network
     - ip: 192.168.41.14
-      desc: utopia
+      auto_config: "True"
+      network_name: utopia
+      method: static
+      type: private_network
     - ip: 4.4.4.10
-      desc: '4-4-4'
+      auto_config: "True"
+      network_name: 4-4-4
+      method: static
+      type: private_network
