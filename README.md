@@ -46,54 +46,96 @@ Define the nodes to spin up
   box: ubuntu/trusty64
   mem: 512
   cpus: 1
-  priv_ip_1: 192.168.250.101  #HostOnly interface
-  priv_ips:  #Internal only interfaces
+  ansible_ssh_host_ip: 192.168.250.101  #HostOnly interface
+  interfaces:  #Internal only interfaces
     - ip: 192.168.12.11
-      desc: 01-to-02
+      auto_config: "True"
+      network_name: 01-to-02
+      method: static
+      type: private_network
     - ip: 192.168.14.11
-      desc: 01-to-04
+      auto_config: "True"
+      network_name: 01-to-04
+      method: static
+      type: private_network
     - ip: 192.168.31.11
-      desc: 03-to-01
+      auto_config: "True"
+      network_name: 03-to-01
+      method: static
+      type: private_network
     - ip: 1.1.1.10
-      desc: 'Network to Advertise'
+      auto_config: "True"
+      network_name: 1-1-1
+      method: static
+      type: private_network
 - name: r2
   box: ubuntu/trusty64
   mem: 512
   cpus: 1
-  priv_ip_1: 192.168.250.102  #HostOnly interface
-  priv_ips:  #Internal only interfaces
+  ansible_ssh_host_ip: 192.168.250.102  #HostOnly interface
+  interfaces:  #Internal only interfaces
     - ip: 192.168.23.12
-      desc: 02-to-03
+      auto_config: "True"
+      network_name: 02-to-03
+      method: static
+      type: private_network
     - ip: 192.168.12.12
-      desc: 01-to-02
+      auto_config: "True"
+      network_name: 01-to-02
+      method: static
+      type: private_network
     - ip: 2.2.2.10
-      desc: 'Network to Advertise'
+      auto_config: "True"
+      network_name: 2-2-2
+      method: static
+      type: private_network
 - name: r3
   box: ubuntu/trusty64
   mem: 512
   cpus: 1
-  priv_ip_1: 192.168.250.103  #HostOnly interface
-  priv_ips:  #Internal only interfaces
+  ansible_ssh_host_ip: 192.168.250.103  #HostOnly interface
+  interfaces:  #Internal only interfaces
     - ip: 192.168.31.13
-      desc: 03-to-01
+      auto_config: "True"
+      network_name: 03-to-01
+      method: static
+      type: private_network
     - ip: 192.168.23.13
-      desc: 02-to-03
+      auto_config: "True"
+      network_name: 02-to-03
+      method: static
+      type: private_network
     - ip: 3.3.3.10
-      desc: 'Network to Advertise'
+      auto_config: "True"
+      network_name: 3-3-3
+      method: static
+      type: private_network
 - name: r4
   box: ubuntu/trusty64
   mem: 512
   cpus: 1
-  priv_ip_1: 192.168.250.104  #HostOnly interface
-  priv_ips:  #Internal only interfaces
+  ansible_ssh_host_ip: 192.168.250.104  #HostOnly interface
+  interfaces:  #Internal only interfaces
     - ip: 192.168.14.14
-      desc: 01-to-04
+      auto_config: "True"
+      network_name: 01-to-04
+      method: static
+      type: private_network
     - ip: 192.168.31.14
-      desc: 03-to-01
+      auto_config: "True"
+      network_name: 03-to-01
+      method: static
+      type: private_network
     - ip: 192.168.41.14
-      desc: utopia
+      auto_config: "True"
+      network_name: utopia
+      method: static
+      type: private_network
     - ip: 4.4.4.10
-      desc: 'Network to Advertise'
+      auto_config: "True"
+      network_name: 4-4-4
+      method: static
+      type: private_network
 ````
 
 Provisions nodes by bootstrapping using Ansible
@@ -195,6 +237,19 @@ quagga_bgp_router_configs:
         remote_as: 123
       - neighbor: 192.168.14.14
         remote_as: 141
+      - neighbor: 192.168.15.15
+        remote_as: 151
+#    network_advertisements:  #networks to advertise and/or define redistribute options
+#      - 1.1.1.0/24
+#      - 192.168.12.0/24
+#      - 192.168.14.0/24
+#      - 192.168.15.0/24
+    redistribute:
+      - connected
+#      - isis
+      - kernel
+#      - rip
+#      - static
   - name: r2
     local_as: 123
     router_id: 2.2.2.2
@@ -203,6 +258,16 @@ quagga_bgp_router_configs:
         remote_as: 123
       - neighbor: 192.168.23.13
         remote_as: 123
+#    network_advertisements:  #networks to advertise and/or define redistribute options
+#      - 2.2.2.0/24
+#      - 192.168.12.0/24
+#      - 192.168.23.0/24
+    redistribute:
+      - connected
+#      - isis
+      - kernel
+#      - rip
+#      - static
   - name: r3
     local_as: 123
     router_id: 3.3.3.3
@@ -211,14 +276,42 @@ quagga_bgp_router_configs:
         remote_as: 123
       - neighbor: 192.168.31.11
         remote_as: 123
+#    network_advertisements:  #networks to advertise and/or define redistribute options
+#      - 3.3.3.0/24
+#      - 192.168.23.0/24
+#      - 192.168.31.0/24
+    redistribute:
+      - connected
+#      - isis
+      - kernel
+#      - rip
+#      - static
   - name: r4
     local_as: 141
     router_id: 4.4.4.4
     neighbors:
       - neighbor: 192.168.14.11
         remote_as: 123
-quagga_enable_bgpd: false
-quagga_enable_ospfd: false
+#    network_advertisements:  #networks to advertise and/or define redistribute options
+#      - 4.4.4.0/24
+#      - 192.168.14.0/24
+#      - 192.168.41.0/24
+    redistribute:
+      - connected
+#      - isis
+      - kernel
+#      - rip
+#      - static
+#quagga_bgp_redistribute:
+#  - connected
+#  - kernel
+#  - static
+#  - isis
+#  - rip
+quagga_config_bgpd: false #defines if quagga bgpd should be configured based on quagga_bgp_router_configs...makes it easy to disable auto routing in order to define your routes manually
+quagga_config_ospfd: false  #defines if quagga ospfd should be configured based on quagga_ospf_ vars...makes it easy to disable auto routing in order to define your routes manually
+quagga_enable_bgpd: true
+quagga_enable_ospfd: true
 quagga_enable_password: quagga
 quagga_ospf_routerid: '{{ ansible_eth1.ipv4.address }}'
 quagga_password: quagga
