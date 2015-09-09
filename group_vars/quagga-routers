@@ -1,5 +1,5 @@
 ---
-config_quagga: true
+config_quagga: false
 quagga_bgp_router_configs:
   - name: r1
     local_as: 123
@@ -84,8 +84,8 @@ quagga_bgp_router_configs:
 #  - rip
 quagga_config_bgpd: false #defines if quagga bgpd should be configured based on quagga_bgp_router_configs...makes it easy to disable auto routing in order to define your routes manually
 quagga_config_ospfd: false  #defines if quagga ospfd should be configured based on quagga_ospf_ vars...makes it easy to disable auto routing in order to define your routes manually
-quagga_enable_bgpd: true
-quagga_enable_ospfd: true
+quagga_enable_bgpd: false
+quagga_enable_ospfd: false
 quagga_enable_password: quagga
 quagga_ospf_routerid: '{{ ansible_eth1.ipv4.address }}'
 quagga_password: quagga
