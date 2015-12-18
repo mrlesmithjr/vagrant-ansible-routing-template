@@ -3,6 +3,8 @@ Purpose
 
 Spin up vagrant multi node routing environment and manage all nodes using Ansible. Upon spinning up vagrant will provision each node using Ansible to bootstrap the nodes. During the bootstrap each node will have a respective host_vars configuration file which will be updated with their eth1 address and ssh key file location. This allows you to run Ansible plays from within your HostOS or within any of your vagrant nodes.
 
+Follow the "Hey I can DevOPS my Network too!" series on my blog at the following link. http://everythingshouldbevirtual.com/hey-i-can-devops-my-network-too-intro
+
 Requirements
 ============
 
