@@ -119,6 +119,11 @@ quagga_configs:
   - 'debian.conf'
   - 'vtysh.conf'
   - 'zebra.conf'
+
+# Defines if quagga_interfaces are defined within Quagga configuration or
+# /etc/network/interfaces.d/
+quagga_defined_interfaces: false
+
 quagga_hostname: '{{ ansible_hostname }}'
 quagga_enable_bgpd: false
 quagga_enable_ospfd: false
@@ -126,12 +131,24 @@ quagga_enable_password: 'quagga' #define here or in group_vars/group
 
 # Define interfaces to configure if desired
 quagga_interfaces: []
-  # - int: 'eth0'
-  #   method: 'static'
-  #   address: '10.1.1.10'
-  #   gateway: '10.1.1.1'
-  #   addl_settings:
-  #     - 'bond_master bond0'
+# - int: 'enp0s9'
+#   configure: true
+#   method: 'static'
+#   address: '192.168.1.10'
+#   # gateway: '10.1.1.1'
+#   cidr: '24'
+#   netmask: '255.255.255.0'
+# #   addl_settings:
+# #     - 'bond_master bond0'
+# - int: 'enp0s10'
+#   configure: true
+#   method: 'static'
+#   address: '192.168.2.10'
+#   # gateway: '10.1.1.1'
+#   cidr: '24'
+#   netmask: '255.255.255.0'
+# #   addl_settings:
+# #     - 'bond_master bond0'
 
 # Define addresses to assign on loopback interface...Can be multiple as well
 # We are defining these as sub-interfaces on the loopback adapter lo

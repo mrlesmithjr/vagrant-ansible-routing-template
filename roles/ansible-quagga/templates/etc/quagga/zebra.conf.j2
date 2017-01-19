@@ -17,6 +17,16 @@ service password-encryption
 debug zebra events
 debug zebra packet
 !
+{% if quagga_interfaces is defined and quagga_defined_interfaces %}
+{%   for qdi in quagga_interfaces %}
+interface {{ qdi.int }}
+{%     if qdi.address is defined %}
+ ip address {{ qdi.address }}/{{ qdi.cidr }}
+ ipv6 nd suppress-ra
+{%     endif %}
+{%   endfor %}
+!
+{% endif %}
 ip forwarding
 ipv6 forwarding
 !

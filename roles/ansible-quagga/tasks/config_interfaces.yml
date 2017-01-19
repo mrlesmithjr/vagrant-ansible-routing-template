@@ -38,7 +38,8 @@
   with_items: '{{ quagga_interfaces }}'
   when: >
         quagga_interfaces is defined and
-        item.configure
+        item.configure and
+        not quagga_defined_interfaces
 
 - name: config_interfaces | Restarting Interfaces
   shell: bash -c "ifdown {{ item.int }} && ifup {{ item.int }}"
@@ -46,17 +47,22 @@
   when: >
         quagga_interfaces is defined and
         item.configure and
-        interfaces_configured.changed
+        interfaces_configured.changed and
+        not quagga_defined_interfaces
 
 - name: config_interfaces | Shutting Down Interfaces (Un-Configured)
   shell: bash -c "ifdown {{ item.int }}"
   register: "interfaces_shutdown"
   with_items: '{{ quagga_interfaces }}'
-  when: not item.configure
+  when: >
+        not item.configure and
+        not quagga_defined_interfaces
 
 - name: config_interfaces | Removing Interfaces (Un-Configured)
   file:
     path: "/etc/network/interfaces.d/{{ item.int }}.cfg"
     state: "absent"
   with_items: '{{ quagga_interfaces }}'
-  when: interfaces_shutdown.changed
+  when: >
+        interfaces_shutdown.changed and
+        not quagga_defined_interfaces
