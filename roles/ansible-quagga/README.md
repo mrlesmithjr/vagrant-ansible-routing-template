@@ -137,15 +137,15 @@ quagga_interfaces: []
 # We are defining these as sub-interfaces on the loopback adapter lo
 quagga_interfaces_lo: []
   # - int: "lo{{ ':' }}0"
-  #   ip_address: '10.0.0.10/32'
+  #   address: '10.0.0.10/32'
   #   method: 'static'
   #   configure: true
   # # - int: "lo{{ ':' }}1"
-  # #   ip_address: '10.0.0.11/32'
+  # #   address: '10.0.0.11/32'
   # #   method: 'static'
   # #   configure: false
   # # - int: "lo{{ ':' }}2"
-  # #   ip_address: '10.0.0.12/32'
+  # #   address: '10.0.0.12/32'
   # #   method: 'static'
   # #   configure: false
 
