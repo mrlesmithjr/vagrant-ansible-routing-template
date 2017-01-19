@@ -1,0 +1,25 @@
+!
+! Zebra configuration saved from vty
+!   2014/09/28 21:25:52
+!
+{% if quagga_hostname is defined %}
+hostname {{ quagga_hostname }}
+{% endif %}
+{% if quagga_hostname is not defined %}
+hostname {{ ansible_hostname }}
+{% endif %}
+password {{ quagga_password }}
+enable password {{ quagga_enable_password }}
+log file /var/log/quagga/zebra.log
+log syslog
+service password-encryption
+!
+debug zebra events
+debug zebra packet
+!
+ip forwarding
+ipv6 forwarding
+!
+!
+line vty
+!

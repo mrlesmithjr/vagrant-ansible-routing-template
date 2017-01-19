@@ -1,0 +1,16 @@
+auto {{ item.int }}
+iface {{ item.int }} inet {{ item.method }}
+{% if item.method|lower == "static" %}
+  address {{ item.address }}
+{%   if item.netmask is defined %}
+  netmask {{ item.netmask }}
+{%   endif %}
+{%   if item.gateway is defined %}
+  gateway {{ item.gateway }}
+{%   endif %}
+{%   if item.addl_settings is defined %}
+{%     for setting in item.addl_settings %}
+  {{ setting }}
+{%     endfor %}
+{%   endif %}
+{% endif %}

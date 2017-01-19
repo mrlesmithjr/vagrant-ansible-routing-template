@@ -1,0 +1,10 @@
+---
+- hosts: quagga-routers
+  tasks:
+    # - name: loop through loopback addresses
+    #   shell: "ip -o link show | awk -F': ' '{ print $2 }'"
+    #   register: "ip_links"
+
+    - debug: msg=Found
+      when: item.int in ansible_interfaces
+      with_items: '{{ quagga_interfaces_lo }}'

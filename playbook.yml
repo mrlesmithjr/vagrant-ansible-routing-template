@@ -1,12 +1,16 @@
 ---
 - hosts: quagga-routers
   remote_user: vagrant
-  sudo: true
+  become: true
   vars:
   roles:
-    - mrlesmithjr.quagga
+    - role: ansible-bootstrap
+    - role: ansible-base
+    - role: ansible-quagga
   tasks:
     - name: installing packages
-      apt: name={{ item }} state=present
+      apt:
+        name: "{{ item }}"
+        state: "present"
       with_items:
-        - traceroute
+        - 'traceroute'

@@ -1,0 +1,232 @@
+Role Name
+=========
+
+An [Ansible] role to install [Quagga]
+
+Requirements
+------------
+
+None
+
+Role Variables
+--------------
+
+```
+---
+# defaults file for ansible-quagga
+quagga_bgp_router_configs: [] # Define BGP configurations for all router nodes
+  # - name: 'node0'
+  #   local_as: '64512'
+  #   neighbors:
+  #     - neighbor: '192.168.1.11'
+  #       description: 'node1'
+  #       remote_as: '64512'
+  #       prefix_lists: # Define specific BGP neighbore prefix lists
+  #         - name: 'FILTER01-out' # Define name of filter
+  #           direction: 'out' # define direction (in|out)
+  #           orf: 'send' # Define outbound route filter (send|receive|both)
+  #     - neighbor: '192.168.2.12'
+  #       description: 'node2'
+  #       prefix_lists:
+  #         - name: 'FILTER02-in'
+  #           direction: 'in'
+  #           orf: 'receive'
+  #       remote_as: '64513'
+  #     - neighbor: '192.168.3.13'
+  #       description: 'node3'
+  #       remote_as: '64514'
+  #   network_advertisements:  #networks to advertise
+  #     - '10.0.0.10/32'
+  #     - '192.168.1.0/24'
+  #     - '192.168.2.0/24'
+  #     - '192.168.3.0/24'
+  #   router_id: '10.0.0.10'
+  #   prefix_lists:
+  #     - name: 'FILTER01-out'
+  #       action: 'permit'
+  #       network: '10.0.0.10/32'
+  #       sequence: '10'
+  #     - name: 'FILTER01-out'
+  #       action: 'permit'
+  #       network: '192.168.1.0/24'
+  #       sequence: '20'
+  #     - name: 'FILTER01-out'
+  #       action: 'permit'
+  #       network: '192.168.2.0/24'
+  #       sequence: '30'
+  #     - name: 'FILTER01-out'
+  #       action: 'deny'
+  #       network: 'any'
+  #       sequence: '40'
+  # - name: 'node1'
+  #   local_as: '64512'
+  #   neighbors:
+  #     - neighbor: '192.168.1.10' # Peering with loopback address for iBGP
+  #       description: 'node0'
+  #       remote_as: '64512'
+  #       prefix_lists:
+  #         - name: 'FILTER01-in'
+  #           direction: 'in'
+  #           orf: 'receive'
+  #   network_advertisements:  #networks to advertise
+  #     - '10.1.1.11/32'
+  #     - '192.168.1.0/24'
+  #   router_id: '10.1.1.11'
+  # - name: 'node2'
+  #   local_as: '64513'
+  #   neighbors:
+  #     - neighbor: '192.168.2.10'
+  #       description: 'node0'
+  #       prefix_lists:
+  #         - name: 'FILTER02-out'
+  #           direction: 'out'
+  #           orf: 'send'
+  #       remote_as: '64512'
+  #   network_advertisements:  #networks to advertise
+  #     # - '10.2.2.12/32'
+  #     - '192.168.2.0/24'
+  #   prefix_lists:
+  #     - name: 'FILTER02-out'
+  #       action: 'permit'
+  #       network: '192.168.2.0/24'
+  #       sequence: '10'
+  #     - name: 'FILTER01-out'
+  #       action: 'deny'
+  #       network: 'any'
+  #       sequence: '20'
+  #   router_id: '10.2.2.12'
+  # - name: 'node3'
+  #   local_as: '64514'
+  #   neighbors:
+  #     - neighbor: '192.168.3.10'
+  #       description: 'node0'
+  #       remote_as: '64512'
+  #   network_advertisements:  #networks to advertise
+  #     - '10.3.3.13/32'
+  #     - '192.168.3.0/24'
+  #   router_id: '10.3.3.13'
+quagga_bgp_routerid: '{{ ansible_default_ipv4.address }}'
+quagga_config: false
+#defines if quagga bgpd should be configured based on quagga_bgp_router_configs
+#makes it easy to disable auto routing in order to define your routes manually
+quagga_config_bgpd: false
+quagga_config_interfaces: false
+#defines if quagga ospfd should be configured based on quagga_ospf_ vars...
+#makes it easy to disable auto routing in order to define your routes manually
+quagga_config_ospfd: false
+quagga_configs:
+  - 'daemons'
+  - 'debian.conf'
+  - 'vtysh.conf'
+  - 'zebra.conf'
+quagga_hostname: '{{ ansible_hostname }}'
+quagga_enable_bgpd: false
+quagga_enable_ospfd: false
+quagga_enable_password: 'quagga' #define here or in group_vars/group
+
+# Define interfaces to configure if desired
+quagga_interfaces: []
+  # - int: 'eth0'
+  #   method: 'static'
+  #   address: '10.1.1.10'
+  #   gateway: '10.1.1.1'
+  #   addl_settings:
+  #     - 'bond_master bond0'
+
+# Define addresses to assign on loopback interface...Can be multiple as well
+# We are defining these as sub-interfaces on the loopback adapter lo
+quagga_interfaces_lo: []
+  # - int: "lo{{ ':' }}0"
+  #   ip_address: '10.0.0.10/32'
+  #   method: 'static'
+  #   configure: true
+  # # - int: "lo{{ ':' }}1"
+  # #   ip_address: '10.0.0.11/32'
+  # #   method: 'static'
+  # #   configure: false
+  # # - int: "lo{{ ':' }}2"
+  # #   ip_address: '10.0.0.12/32'
+  # #   method: 'static'
+  # #   configure: false
+
+quagga_no_passive_int: [] # Define any interfaces to not advertise routes on
+  # - 'eth0'
+  # - 'eth1'
+quagga_ospf_area: '51'  #defines the desired area mapping for OSPF routing with upstream OSPF routers
+quagga_ospf_area_config: []
+  # - network: '192.168.1.0/24'
+  #   area: '{{ quagga_ospf_area }}'
+  # - network: '192.168.2.0/24'
+  #   area: '{{ quagga_ospf_area }}'
+  # - network: '192.168.3.0/24'
+  #   area: '{{ quagga_ospf_area }}'
+quagga_ospf_redistribute:
+  - 'connected'
+#  - 'kernel'
+#  - 'static'
+#  - 'isis'
+#  - 'rip'
+quagga_ospf_routerid: '{{ ansible_default_ipv4.address }}'  #defines the router id IP address for OSPF
+quagga_passive_int: []
+quagga_password: 'quagga' #define in group_vars/all/accounts
+quagga_root_dir: '/etc/quagga'
+quagga_sysctl_network_settings:
+  - name: 'net.ipv4.ip_forward'
+    value: '1'
+  - name: 'net.ipv4.conf.all.forwarding'
+    value: '1'
+  - name: 'net.ipv4.conf.default.forwarding'
+    value: '1'
+  - name: 'net.ipv4.tcp_tw_reuse'
+    value: '1'
+  - name: 'net.ipv4.ip_local_port_range'
+    value: '1024 65023'
+  - name: 'net.ipv4.tcp_max_syn_backlog'
+    value: '40000'
+  - name: 'net.ipv4.tcp_max_tw_buckets'
+    value: '400000'
+  - name: 'net.ipv4.tcp_max_orphans'
+    value: '60000'
+  - name: 'net.ipv4.tcp_syncookies'
+    value: '1'
+  - name: 'net.ipv4.tcp_synack_retries'
+    value: '3'
+  - name: 'net.core.somaxconn'
+    value: '40000'
+  - name: 'net.ipv4.tcp_fin_timeout'
+    value: '5'
+quagga_user: 'quagga'
+```
+
+Dependencies
+------------
+
+None
+
+Example Playbook
+----------------
+
+```
+- hosts: all
+  become: true
+  vars:
+  roles:
+    - role: ansible-quagga
+  tasks:
+```
+
+License
+-------
+
+BSD
+
+Author Information
+------------------
+
+Larry Smith Jr.
+- @mrlesmithjr
+- http://everythingshouldbevirtual.com
+- mrlesmithjr [at] gmail.com
+
+[Ansible]: <https://ansible.com>
+[Quagga]: <http://www.nongnu.org/quagga/>

@@ -1,0 +1,5 @@
+---
+- src: https://github.com/mrlesmithjr/ansible-base.git
+- src: https://github.com/mrlesmithjr/ansible-bootstrap.git
+- src: https://github.com/mrlesmithjr/ansible-config-interfaces.git
+- src: https://github.com/mrlesmithjr/ansible-quagga.git

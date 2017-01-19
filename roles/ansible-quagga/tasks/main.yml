@@ -1,0 +1,15 @@
+---
+# tasks file for ansible-quagga
+- include: debian.yml
+  when: ansible_os_family == "Debian"
+
+- include: centos.yml
+  when: ansible_os_family == "RedHat"
+
+- include: config_interfaces.yml
+  when: quagga_config_interfaces
+
+- include: config_quagga.yml
+  tags:
+    - quagga_config
+  when: quagga_config

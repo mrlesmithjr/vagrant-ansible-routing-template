@@ -1,0 +1,98 @@
+---
+quagga_bgp_router_configs:
+  - name: 'node0'
+    local_as: '64512'
+    neighbors:
+      - neighbor: '192.168.1.11'
+        description: 'node1'
+        remote_as: '64512'
+        prefix_lists: # Define specific BGP neighbore prefix lists
+          - name: 'FILTER01-out' # Define name of filter
+            direction: 'out' # define direction (in|out)
+            orf: 'send' # Define outbound route filter (send|receive|both)
+      - neighbor: '192.168.2.12'
+        description: 'node2'
+        prefix_lists:
+          - name: 'FILTER02-in'
+            direction: 'in'
+            orf: 'receive'
+        remote_as: '64513'
+      - neighbor: '192.168.3.13'
+        description: 'node3'
+        remote_as: '64514'
+    network_advertisements:  #networks to advertise
+      - '10.0.0.10/32'
+      - '192.168.1.0/24'
+      - '192.168.2.0/24'
+      - '192.168.3.0/24'
+    router_id: '10.0.0.10'
+    prefix_lists:
+      - name: 'FILTER01-out'
+        action: 'permit'
+        network: '10.0.0.10/32'
+        sequence: '10'
+      - name: 'FILTER01-out'
+        action: 'permit'
+        network: '192.168.1.0/24'
+        sequence: '20'
+      - name: 'FILTER01-out'
+        action: 'permit'
+        network: '192.168.2.0/24'
+        sequence: '30'
+      - name: 'FILTER01-out'
+        action: 'deny'
+        network: 'any'
+        sequence: '40'
+  - name: 'node1'
+    local_as: '64512'
+    neighbors:
+      - neighbor: '192.168.1.10' # Peering with loopback address for iBGP
+        description: 'node0'
+        remote_as: '64512'
+        prefix_lists:
+          - name: 'FILTER01-in'
+            direction: 'in'
+            orf: 'receive'
+    network_advertisements:  #networks to advertise
+      - '10.1.1.11/32'
+      - '192.168.1.0/24'
+    router_id: '10.1.1.11'
+  - name: 'node2'
+    local_as: '64513'
+    neighbors:
+      - neighbor: '192.168.2.10'
+        description: 'node0'
+        prefix_lists:
+          - name: 'FILTER02-out'
+            direction: 'out'
+            orf: 'send'
+        remote_as: '64512'
+    network_advertisements:  #networks to advertise
+      # - '10.2.2.12/32'
+      - '192.168.2.0/24'
+    prefix_lists:
+      - name: 'FILTER02-out'
+        action: 'permit'
+        network: '192.168.2.0/24'
+        sequence: '10'
+      - name: 'FILTER01-out'
+        action: 'deny'
+        network: 'any'
+        sequence: '20'
+    router_id: '10.2.2.12'
+  - name: 'node3'
+    local_as: '64514'
+    neighbors:
+      - neighbor: '192.168.3.10'
+        description: 'node0'
+        remote_as: '64512'
+    network_advertisements:  #networks to advertise
+      - '10.3.3.13/32'
+      - '192.168.3.0/24'
+    router_id: '10.3.3.13'
+quagga_config_bgpd: false #defines if quagga bgpd should be configured based on quagga_bgp_router_configs...makes it easy to disable auto routing in order to define your routes manually
+quagga_config_interfaces: true
+quagga_config_ospfd: false  #defines if quagga ospfd should be configured based on quagga_ospf_ vars...makes it easy to disable auto routing in order to define your routes manually
+quagga_config: false
+quagga_enable_bgpd: false
+quagga_enable_ospfd: false
