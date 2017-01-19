@@ -51,14 +51,14 @@ additional_nic_assignments = [
     :node => "node0"
   },
   {
-    :auto_config => true,
+    :auto_config => false,
     :ip => "192.168.1.10",
     :method => "static",
     :network_name => "spine-leaf-1",
     :node => "node0"
   },
   {
-    :auto_config => true,
+    :auto_config => false,
     :ip => "192.168.2.10",
     :method => "static",
     :network_name => "spine-leaf-2",
@@ -79,14 +79,14 @@ additional_nic_assignments = [
     :node => "node1"
   },
   {
-    :auto_config => true,
+    :auto_config => false,
     :ip => "192.168.1.11",
     :method => "static",
     :network_name => "spine-leaf-1",
     :node => "node1"
   },
   {
-    :auto_config => true,
+    :auto_config => false,
     :ip => "192.168.10.11",
     :method => "static",
     :network_name => "compute-1",
@@ -107,7 +107,7 @@ additional_nic_assignments = [
     :node => "node2"
   },
   {
-    :auto_config => true,
+    :auto_config => false,
     :ip => "192.168.2.12",
     :method => "static",
     :network_name => "spine-leaf-2",
@@ -121,7 +121,7 @@ additional_nic_assignments = [
   #   :node => "node2"
   # },
   {
-    :auto_config => true,
+    :auto_config => false,
     :ip => "192.168.20.12",
     :method => "static",
     :network_name => "compute-2",
@@ -135,7 +135,7 @@ additional_nic_assignments = [
     :node => "node3"
   },
   {
-    :auto_config => true,
+    :auto_config => false,
     :ip => "192.168.10.13",
     :method => "static",
     :network_name => "compute-1",
@@ -149,7 +149,7 @@ additional_nic_assignments = [
   #   :node => "node3"
   # },
   {
-    :auto_config => true,
+    :auto_config => false,
     :ip => "192.168.30.13",
     :method => "static",
     :network_name => "workloads-3",
@@ -170,14 +170,14 @@ additional_nic_assignments = [
   #   :node => "node4"
   # },
   {
-    :auto_config => true,
+    :auto_config => false,
     :ip => "192.168.20.14",
     :method => "static",
     :network_name => "compute-2",
     :node => "node4"
   },
   {
-    :auto_config => true,
+    :auto_config => false,
     :ip => "192.168.40.14",
     :method => "static",
     :network_name => "workloads-4",

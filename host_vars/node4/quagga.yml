@@ -1,4 +1,23 @@
 ---
+quagga_interfaces:
+  - int: 'enp0s9'
+    configure: true
+    method: 'static'
+    address: '192.168.20.14'
+    # gateway: '10.1.1.1'
+    cidr: '24'
+    netmask: '255.255.255.0'
+  #   addl_settings:
+  #     - 'bond_master bond0'
+  - int: 'enp0s10'
+    configure: true
+    method: 'static'
+    address: '192.168.40.14'
+    # gateway: '10.1.1.1'
+    cidr: '24'
+    netmask: '255.255.255.0'
+  #   addl_settings:
+  #     - 'bond_master bond0
 quagga_interfaces_lo:
   - int: "lo{{ ':' }}0"
     address: '10.4.4.14/32'
