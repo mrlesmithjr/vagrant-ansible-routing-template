@@ -158,6 +158,10 @@ server_cpus = 1
 #Define amount of memory to assign to node(s)
   #will be ignored if custom_cpu_mem == true
 server_memory = 512
+#Define subnet for private_network (If not using DHCP)
+subnet = "192.168.202."
+#Define starting last octet of the subnet range to begin addresses for node(s)
+subnet_ip_start = 200
 
 Vagrant.configure(2) do |config|
 
