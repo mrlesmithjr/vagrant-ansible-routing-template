@@ -7,7 +7,7 @@
 # you're doing.
 
 # ---- Define number of nodes to spin up ----
-N = 4
+N = 5
 
 # ---- Define any custom memory/cpu requirement ----
 # if custom requirements are desired...ensure to set
@@ -18,8 +18,14 @@ N = 4
 # only define any node which requires more than the defaults.
 nodes = [
   {
-    :node => "node0",
-    :box => "mrlesmithjr/trusty64",
+    :node => "node3",
+    :box => "mrlesmithjr/xenial64",
+    :cpu => 1,
+    :mem => 1024
+  },
+  {
+    :node => "node4",
+    :box => "mrlesmithjr/xenial64",
     :cpu => 1,
     :mem => 1024
   }
@@ -48,23 +54,23 @@ additional_nic_assignments = [
     :auto_config => true,
     :ip => "192.168.1.10",
     :method => "static",
-    :network_name => "net-01",
+    :network_name => "spine-leaf-1",
     :node => "node0"
   },
   {
     :auto_config => true,
     :ip => "192.168.2.10",
     :method => "static",
-    :network_name => "net-02",
+    :network_name => "spine-leaf-2",
     :node => "node0"
   },
-  {
-    :auto_config => true,
-    :ip => "192.168.3.10",
-    :method => "static",
-    :network_name => "net-03",
-    :node => "node0"
-  },
+  # {
+  #   :auto_config => true,
+  #   :ip => "192.168.3.10",
+  #   :method => "static",
+  #   :network_name => "net-03",
+  #   :node => "node0"
+  # },
   {
     :auto_config => true,
     :ip => "192.168.250.11",
@@ -76,9 +82,23 @@ additional_nic_assignments = [
     :auto_config => true,
     :ip => "192.168.1.11",
     :method => "static",
-    :network_name => "net-01",
+    :network_name => "spine-leaf-1",
     :node => "node1"
   },
+  {
+    :auto_config => true,
+    :ip => "192.168.10.11",
+    :method => "static",
+    :network_name => "compute-1",
+    :node => "node1"
+  },
+  # {
+  #   :auto_config => true,
+  #   :ip => "192.168.20.11",
+  #   :method => "static",
+  #   :network_name => "compute-2",
+  #   :node => "node1"
+  # },
   {
     :auto_config => true,
     :ip => "192.168.250.12",
@@ -90,7 +110,21 @@ additional_nic_assignments = [
     :auto_config => true,
     :ip => "192.168.2.12",
     :method => "static",
-    :network_name => "net-02",
+    :network_name => "spine-leaf-2",
+    :node => "node2"
+  },
+  # {
+  #   :auto_config => true,
+  #   :ip => "192.168.10.12",
+  #   :method => "static",
+  #   :network_name => "compute-1",
+  #   :node => "node2"
+  # },
+  {
+    :auto_config => true,
+    :ip => "192.168.20.12",
+    :method => "static",
+    :network_name => "compute-2",
     :node => "node2"
   },
   {
@@ -102,10 +136,52 @@ additional_nic_assignments = [
   },
   {
     :auto_config => true,
-    :ip => "192.168.3.13",
+    :ip => "192.168.10.13",
     :method => "static",
-    :network_name => "net-03",
+    :network_name => "compute-1",
     :node => "node3"
+  },
+  # {
+  #   :auto_config => true,
+  #   :ip => "192.168.20.13",
+  #   :method => "static",
+  #   :network_name => "compute-2",
+  #   :node => "node3"
+  # },
+  {
+    :auto_config => true,
+    :ip => "192.168.30.13",
+    :method => "static",
+    :network_name => "workloads-3",
+    :node => "node3"
+  },
+  {
+    :auto_config => true,
+    :ip => "192.168.250.14",
+    :method => "static",
+    # :network_name => "management",
+    :node => "node4"
+  },
+  # {
+  #   :auto_config => true,
+  #   :ip => "192.168.10.14",
+  #   :method => "static",
+  #   :network_name => "compute-1",
+  #   :node => "node4"
+  # },
+  {
+    :auto_config => true,
+    :ip => "192.168.20.14",
+    :method => "static",
+    :network_name => "compute-2",
+    :node => "node4"
+  },
+  {
+    :auto_config => true,
+    :ip => "192.168.40.14",
+    :method => "static",
+    :network_name => "workloads-4",
+    :node => "node4"
   }
 ]
 #Define if add'l network adapters are auto configured addresses (true|false)
@@ -115,18 +191,21 @@ additional_nics_dhcp = false
 #Define the number of additional nics to add
 additional_nics_num = 4
 ansible_groups = {
-  "quagga-routers" => ["node[0:#{N-1}]"]
+  "spines" => ["node0"],
+  "leafs" => ["node[1:2]"],
+  "quagga-routers:children" => ["spines", "leafs", "compute-nodes"],
+  "compute-nodes" => ["node[3:4]"]
 }
 #Define Vagrant box to load
 box = "mrlesmithjr/xenial64"
 #Define if custom cpu and memory requirements are needed (true|false)
   #defined within nodes variable above
-custom_cpu_mem = false
+custom_cpu_mem = true
 #Define if running desktop OS (true|false)
 desktop = false
 enable_additional_nic_assignments = true
 #Define if custom boxes should be used...defined in nodes var..
-enable_custom_boxes = false
+enable_custom_boxes = true
 #Define if port forwards should be enabled (true|false)
 enable_port_forwards = false
 #Defines if nodes should be linked from master VM (true|false)
