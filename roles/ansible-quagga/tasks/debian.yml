@@ -4,8 +4,9 @@
     name: "{{ item }}"
     state: "present"
   with_items:
-    - lldpd
-    - vlan
+    - 'ifenslave'
+    - 'lldpd'
+    - 'vlan'
 
 - name: debian | installing quagga
   apt:

@@ -8,13 +8,13 @@ link. http://everythingshouldbevirtual.com/hey-i-can-devops-my-network-too-intro
 * Note: The above blog post is out of date until it is updated based on the new
 configuration here.
 
-This lab will spin up 7 nodes in a spine leaf simulation with BGP routing between
+This lab will spin up 10 nodes in a spine leaf simulation with BGP routing between
 all nodes including the compute nodes. The compute nodes are running [Docker] so
 you can experiment with running some containers in this environment as well. All
 [Docker] compute nodes participate in a [Docker] swarm cluster as well.
 
-* node0 - Spine
-* node1|node2 - Leafs
+* node0|node7 - Spines
+* node1|node2|node8|node9 - Leafs
 * node3|node4 - Compute/Docker Swarm Managers
 * node5|node6 - Compute/Docker Swarm Workers
 
@@ -33,6 +33,9 @@ interface IP addresses.
 * node4 - 192.168.250.14
 * node5 - 192.168.250.15
 * node6 - 192.168.250.16
+* node7 - 192.168.250.17
+* node8 - 192.168.250.18
+* node9 - 192.168.250.19
 
 Requirements
 ------------
@@ -41,281 +44,6 @@ Requirements
 * [VirtualBox]
 * [Vagrant]
 
-Variable Definitions
---------------------
-`group_vars/quagga-routers/quagga.yml`
-```
----
-quagga_bgp_router_configs:
-  - name: 'node0'
-    local_as: '64512'
-    neighbors:
-      - neighbor: '192.168.1.11'
-        description: 'node1'
-        remote_as: '64512'
-        prefix_lists: # Define specific BGP neighbore prefix lists
-          - name: 'FILTER01-out' # Define name of filter
-            direction: 'out' # define direction (in|out)
-            orf: 'send' # Define outbound route filter (send|receive|both)
-      - neighbor: '192.168.2.12'
-        description: 'node2'
-        prefix_lists:
-          - name: 'FILTER02-in'
-            direction: 'in'
-            orf: 'receive'
-        remote_as: '64513'
-      - neighbor: '192.168.3.13'
-        description: 'node3'
-        remote_as: '64514'
-    network_advertisements:  #networks to advertise
-      - '10.0.0.10/32'
-      - '192.168.1.0/24'
-      - '192.168.2.0/24'
-      - '192.168.3.0/24'
-    router_id: '10.0.0.10'
-    prefix_lists:
-      - name: 'FILTER01-out'
-        action: 'permit'
-        network: '10.0.0.10/32'
-        sequence: '10'
-      - name: 'FILTER01-out'
-        action: 'permit'
-        network: '192.168.1.0/24'
-        sequence: '20'
-      - name: 'FILTER01-out'
-        action: 'permit'
-        network: '192.168.2.0/24'
-        sequence: '30'
-      - name: 'FILTER01-out'
-        action: 'deny'
-        network: 'any'
-        sequence: '40'
-  - name: 'node1'
-    local_as: '64512'
-    neighbors:
-      - neighbor: '192.168.1.10' # Peering with loopback address for iBGP
-        description: 'node0'
-        remote_as: '64512'
-        prefix_lists:
-          - name: 'FILTER01-in'
-            direction: 'in'
-            orf: 'receive'
-    network_advertisements:  #networks to advertise
-      - '10.1.1.11/32'
-      - '192.168.1.0/24'
-    router_id: '10.1.1.11'
-  - name: 'node2'
-    local_as: '64513'
-    neighbors:
-      - neighbor: '192.168.2.10'
-        description: 'node0'
-        prefix_lists:
-          - name: 'FILTER02-out'
-            direction: 'out'
-            orf: 'send'
-        remote_as: '64512'
-    network_advertisements:  #networks to advertise
-      # - '10.2.2.12/32'
-      - '192.168.2.0/24'
-    prefix_lists:
-      - name: 'FILTER02-out'
-        action: 'permit'
-        network: '192.168.2.0/24'
-        sequence: '10'
-      - name: 'FILTER01-out'
-        action: 'deny'
-        network: 'any'
-        sequence: '20'
-    router_id: '10.2.2.12'
-  - name: 'node3'
-    local_as: '64514'
-    neighbors:
-      - neighbor: '192.168.3.10'
-        description: 'node0'
-        remote_as: '64512'
-    network_advertisements:  #networks to advertise
-      - '10.3.3.13/32'
-      - '192.168.3.0/24'
-    router_id: '10.3.3.13'
-quagga_config_bgpd: false #defines if quagga bgpd should be configured based on quagga_bgp_router_configs...makes it easy to disable auto routing in order to define your routes manually
-quagga_config_interfaces: true
-quagga_config_ospfd: false  #defines if quagga ospfd should be configured based on quagga_ospf_ vars...makes it easy to disable auto routing in order to define your routes manually
-quagga_config: true
-quagga_enable_bgpd: false
-quagga_enable_ospfd: false
-```
-`host_vars/node0/quagga.yml`
-```
----
-quagga_interfaces:
-  - int: 'enp0s9'
-    configure: true
-    method: 'static'
-    address: '192.168.1.10'
-    # gateway: '10.1.1.1'
-    cidr: '24'
-    netmask: '255.255.255.0'
-  #   addl_settings:
-  #     - 'bond_master bond0'
-  - int: 'enp0s10'
-    configure: true
-    method: 'static'
-    address: '192.168.2.10'
-    # gateway: '10.1.1.1'
-    cidr: '24'
-    netmask: '255.255.255.0'
-  #   addl_settings:
-  #     - 'bond_master bond0'
-quagga_interfaces_lo:
-  - int: "lo{{ ':' }}0"
-    address: '10.0.0.10/32'
-    method: 'static'
-    configure: true
-  # - int: "lo{{ ':' }}1"
-  #   address: '10.0.0.11/32'
-  #   method: 'static'
-  #   configure: false
-  # - int: "lo{{ ':' }}2"
-  #   address: '10.0.0.12/32'
-  #   method: 'static'
-  #   configure: false
-quagga_ospf_area_config:
-  - network: '192.168.1.0/24'
-    area: '{{ quagga_ospf_area }}'
-  - network: '192.168.2.0/24'
-    area: '{{ quagga_ospf_area }}'
-  - network: '192.168.3.0/24'
-    area: '{{ quagga_ospf_area }}'
-quagga_ospf_routerid: '10.0.0.10'
-```
-`host_vars/node1/quagga.yml`
-```
----
-quagga_interfaces:
-  - int: 'enp0s9'
-    configure: true
-    method: 'static'
-    address: '192.168.1.11'
-    # gateway: '10.1.1.1'
-    cidr: '24'
-    netmask: '255.255.255.0'
-  #   addl_settings:
-  #     - 'bond_master bond0'
-  - int: 'enp0s10'
-    configure: true
-    method: 'static'
-    address: '192.168.10.11'
-    # gateway: '10.1.1.1'
-    cidr: '24'
-    netmask: '255.255.255.0'
-  #   addl_settings:
-  #     - 'bond_master bond0'
-quagga_interfaces_lo:
-  - int: "lo{{ ':' }}0"
-    address: '10.1.1.11/32'
-    method: 'static'
-    configure: true
-quagga_ospf_area_config:
-  - network: '192.168.1.0/24'
-    area: '{{ quagga_ospf_area }}'
-quagga_ospf_routerid: '10.1.1.11'
-```
-`host_vars/node2/quagga.yml`
-```
----
-quagga_interfaces:
-  - int: 'enp0s9'
-    configure: true
-    method: 'static'
-    address: '192.168.2.12'
-    # gateway: '10.1.1.1'
-    cidr: '24'
-    netmask: '255.255.255.0'
-  #   addl_settings:
-  #     - 'bond_master bond0'
-  - int: 'enp0s10'
-    configure: true
-    method: 'static'
-    address: '192.168.20.12'
-    # gateway: '10.1.1.1'
-    cidr: '24'
-    netmask: '255.255.255.0'
-  #   addl_settings:
-  #     - 'bond_master bond0'
-quagga_interfaces_lo:
-  - int: "lo{{ ':' }}0"
-    address: '10.2.2.12/32'
-    method: 'static'
-    configure: true
-quagga_ospf_area_config:
-  - network: '192.168.2.0/24'
-    area: '{{ quagga_ospf_area }}'
-quagga_ospf_routerid: '10.2.2.12'
-```
-`host_vars/node3/quagga.yml`
-```
----
-quagga_interfaces:
-  - int: 'enp0s9'
-    configure: true
-    method: 'static'
-    address: '192.168.10.13'
-    # gateway: '10.1.1.1'
-    cidr: '24'
-    netmask: '255.255.255.0'
-  #   addl_settings:
-  #     - 'bond_master bond0'
-  - int: 'enp0s10'
-    configure: true
-    method: 'static'
-    address: '192.168.30.13'
-    # gateway: '10.1.1.1'
-    cidr: '24'
-    netmask: '255.255.255.0'
-  #   addl_settings:
-  #     - 'bond_master bond0
-quagga_interfaces_lo:
-  - int: "lo{{ ':' }}0"
-    address: '10.3.3.13/32'
-    method: 'static'
-    configure: true
-quagga_ospf_area_config:
-  - network: '192.168.3.0/24'
-    area: '{{ quagga_ospf_area }}'
-quagga_ospf_routerid: '10.3.3.13'
-```
-`host_vars/node4/quagga.yml`
-```
----
-quagga_interfaces:
-  - int: 'enp0s9'
-    configure: true
-    method: 'static'
-    address: '192.168.20.14'
-    # gateway: '10.1.1.1'
-    cidr: '24'
-    netmask: '255.255.255.0'
-  #   addl_settings:
-  #     - 'bond_master bond0'
-  - int: 'enp0s10'
-    configure: true
-    method: 'static'
-    address: '192.168.40.14'
-    # gateway: '10.1.1.1'
-    cidr: '24'
-    netmask: '255.255.255.0'
-  #   addl_settings:
-  #     - 'bond_master bond0
-quagga_interfaces_lo:
-  - int: "lo{{ ':' }}0"
-    address: '10.4.4.14/32'
-    method: 'static'
-    configure: true
-quagga_ospf_area_config:
-  - network: '192.168.3.0/24'
-    area: '{{ quagga_ospf_area }}'
-quagga_ospf_routerid: '10.4.4.14'
-```
 Usage
 -----
 
@@ -341,16 +69,16 @@ vagrant@node0:~$ ip route
 default via 10.0.2.2 dev enp0s3
 10.0.2.0/24 dev enp0s3  proto kernel  scope link  src 10.0.2.15
 192.168.1.0/24 dev enp0s9  proto kernel  scope link  src 192.168.1.10
-192.168.2.0/24 dev enp0s10  proto kernel  scope link  src 192.168.2.10
-192.168.10.0/24 via 192.168.1.11 dev enp0s9  proto zebra
-192.168.20.0/24 via 192.168.2.12 dev enp0s10  proto zebra
-192.168.30.0/24 via 192.168.1.11 dev enp0s9  proto zebra
-192.168.40.0/24 via 192.168.2.12 dev enp0s10  proto zebra
-192.168.50.0/24 via 192.168.1.11 dev enp0s9  proto zebra
-192.168.60.0/24 via 192.168.2.12 dev enp0s10  proto zebra
-192.168.250.0/24 dev enp0s8  proto kernel  scope link  src 192.168.250.10
-```
+192.168.2.0/24 via 192.168.1.11 dev enp0s9  proto zebra
+192.168.10.0/24 via 192.168.1.18 dev enp0s9  proto zebra
+192.168.20.0/24 via 192.168.1.19 dev enp0s9  proto zebra
+192.168.30.0/24 via 192.168.1.18 dev enp0s9  proto zebra
+192.168.40.0/24 via 192.168.1.19 dev enp0s9  proto zebra
+192.168.50.0/24 via 192.168.1.18 dev enp0s9  proto zebra
+192.168.60.0/24 via 192.168.1.19 dev enp0s9  proto zebra
+192.168.250.0/24 dev enp0s8  proto kernel  scope link  src 192.168.250.10```
 Now enter the `vtysh` shell and run some additional validations:
+```
 ```
 sudo vtysh
 ```
@@ -363,13 +91,22 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
 
    Network          Next Hop            Metric LocPrf Weight Path
 *> 192.168.1.0      0.0.0.0                  0         32768 i
-*> 192.168.2.0      0.0.0.0                  0         32768 i
-*> 192.168.10.0     192.168.1.11             0             0 64513 i
-*> 192.168.20.0     192.168.2.12             0             0 64514 i
-*> 192.168.30.0     192.168.1.11                           0 64513 i
-*> 192.168.40.0     192.168.2.12                           0 64514 i
-*> 192.168.50.0     192.168.1.11                           0 64513 i
-*> 192.168.60.0     192.168.2.12                           0 64514 i
+*  192.168.2.0      192.168.1.12                           0 64514 64515 i
+*>                  192.168.1.11                           0 64513 64515 i
+*                   192.168.1.18                           0 64513 64515 i
+*                   192.168.1.19                           0 64514 64515 i
+*  192.168.10.0     192.168.1.11             0             0 64513 i
+*>                  192.168.1.18             0             0 64513 i
+*  192.168.20.0     192.168.1.12             0             0 64514 i
+*>                  192.168.1.19             0             0 64514 i
+*  192.168.30.0     192.168.1.11                           0 64513 i
+*>                  192.168.1.18                           0 64513 i
+*  192.168.40.0     192.168.1.12                           0 64514 i
+*>                  192.168.1.19                           0 64514 i
+*  192.168.50.0     192.168.1.11                           0 64513 i
+*>                  192.168.1.18                           0 64513 i
+*  192.168.60.0     192.168.1.12                           0 64514 i
+*>                  192.168.1.19                           0 64514 i
 
 Total number of prefixes 8
 ```
@@ -378,53 +115,8 @@ node0# sh ip bgp neighbors
 BGP neighbor is 192.168.1.11, remote AS 64513, local AS 64512, external link
  Description: "leaf-1-node1"
   BGP version 4, remote router ID 10.1.1.11
-  BGP state = Established, up for 00:36:30
-  Last read 00:00:29, hold time is 180, keepalive interval is 60 seconds
-  Neighbor capabilities:
-    4 Byte AS: advertised and received
-    Route refresh: advertised and received(old & new)
-    Address family IPv4 Unicast: advertised and received
-    Graceful Restart Capabilty: advertised and received
-      Remote Restart timer is 120 seconds
-      Address families by peer:
-        none
-  Graceful restart informations:
-    End-of-RIB send: IPv4 Unicast
-    End-of-RIB received: IPv4 Unicast
-  Message statistics:
-    Inq depth is 0
-    Outq depth is 0
-                         Sent       Rcvd
-    Opens:                  1          1
-    Notifications:          0          0
-    Updates:                4          3
-    Keepalives:            38         37
-    Route Refresh:          0          0
-    Capability:             0          0
-    Total:                 43         41
-  Minimum time between advertisement runs is 30 seconds
-
- For address family: IPv4 Unicast
-  Inbound soft reconfiguration allowed
-  NEXT_HOP is always this router
-  Community attribute sent to this neighbor(both)
-  2 accepted prefixes
-
-  Connections established 1; dropped 0
-  Last reset never
-Local host: 192.168.1.10, Local port: 29690
-Foreign host: 192.168.1.11, Foreign port: 179
-Nexthop: 192.168.1.10
-Nexthop global: fe80::a00:27ff:fe4f:f988
-Nexthop local: ::
-BGP connection: non shared network
-Read thread: on  Write thread: off
-
-BGP neighbor is 192.168.2.12, remote AS 64514, local AS 64512, external link
- Description: "leaf-2-node2"
-  BGP version 4, remote router ID 10.2.2.12
-  BGP state = Established, up for 00:36:30
-  Last read 00:00:29, hold time is 180, keepalive interval is 60 seconds
+  BGP state = Established, up for 00:11:15
+  Last read 00:00:15, hold time is 180, keepalive interval is 60 seconds
   Neighbor capabilities:
     4 Byte AS: advertised and received
     Route refresh: advertised and received(old & new)
@@ -442,56 +134,198 @@ BGP neighbor is 192.168.2.12, remote AS 64514, local AS 64512, external link
                          Sent       Rcvd
     Opens:                  2          0
     Notifications:          0          0
-    Updates:                4          3
-    Keepalives:            38         37
+    Updates:                7          4
+    Keepalives:            13         12
     Route Refresh:          0          0
     Capability:             0          0
-    Total:                 44         40
+    Total:                 22         16
   Minimum time between advertisement runs is 30 seconds
 
  For address family: IPv4 Unicast
   Inbound soft reconfiguration allowed
   NEXT_HOP is always this router
   Community attribute sent to this neighbor(both)
-  2 accepted prefixes
+  4 accepted prefixes
 
   Connections established 1; dropped 0
   Last reset never
-Local host: 192.168.2.10, Local port: 179
-Foreign host: 192.168.2.12, Foreign port: 9788
-Nexthop: 192.168.2.10
-Nexthop global: fe80::a00:27ff:fe02:6cb7
+Local host: 192.168.1.10, Local port: 179
+Foreign host: 192.168.1.11, Foreign port: 51128
+Nexthop: 192.168.1.10
+Nexthop global: fe80::a00:27ff:fec4:88a7
+Nexthop local: ::
+BGP connection: non shared network
+Read thread: on  Write thread: off
+
+BGP neighbor is 192.168.1.12, remote AS 64514, local AS 64512, external link
+ Description: "leaf-2-node2"
+  BGP version 4, remote router ID 10.2.2.12
+  BGP state = Established, up for 00:06:26
+  Last read 00:00:26, hold time is 180, keepalive interval is 60 seconds
+  Neighbor capabilities:
+    4 Byte AS: advertised and received
+    Route refresh: advertised and received(old & new)
+    Address family IPv4 Unicast: advertised and received
+    Graceful Restart Capabilty: advertised and received
+      Remote Restart timer is 120 seconds
+      Address families by peer:
+        none
+  Graceful restart informations:
+    End-of-RIB send: IPv4 Unicast
+    End-of-RIB received: IPv4 Unicast
+  Message statistics:
+    Inq depth is 0
+    Outq depth is 0
+                         Sent       Rcvd
+    Opens:                  3          0
+    Notifications:          0          1
+    Updates:               10          9
+    Keepalives:            12         10
+    Route Refresh:          0          0
+    Capability:             0          0
+    Total:                 25         20
+  Minimum time between advertisement runs is 30 seconds
+
+ For address family: IPv4 Unicast
+  Inbound soft reconfiguration allowed
+  NEXT_HOP is always this router
+  Community attribute sent to this neighbor(both)
+  4 accepted prefixes
+
+  Connections established 2; dropped 1
+  Last reset 00:08:20, due to BGP Notification received
+Local host: 192.168.1.10, Local port: 179
+Foreign host: 192.168.1.12, Foreign port: 41044
+Nexthop: 192.168.1.10
+Nexthop global: fe80::a00:27ff:fec4:88a7
+Nexthop local: ::
+BGP connection: non shared network
+Read thread: on  Write thread: off
+
+BGP neighbor is 192.168.1.18, remote AS 64513, local AS 64512, external link
+ Description: "leaf-1-node8"
+  BGP version 4, remote router ID 10.1.1.11
+  BGP state = Established, up for 00:11:16
+  Last read 00:00:16, hold time is 180, keepalive interval is 60 seconds
+  Neighbor capabilities:
+    4 Byte AS: advertised and received
+    Route refresh: advertised and received(old & new)
+    Address family IPv4 Unicast: advertised and received
+    Graceful Restart Capabilty: advertised and received
+      Remote Restart timer is 120 seconds
+      Address families by peer:
+        none
+  Graceful restart informations:
+    End-of-RIB send: IPv4 Unicast
+    End-of-RIB received: IPv4 Unicast
+  Message statistics:
+    Inq depth is 0
+    Outq depth is 0
+                         Sent       Rcvd
+    Opens:                  2          0
+    Notifications:          0          0
+    Updates:                6          4
+    Keepalives:            13         12
+    Route Refresh:          0          0
+    Capability:             0          0
+    Total:                 21         16
+  Minimum time between advertisement runs is 30 seconds
+
+ For address family: IPv4 Unicast
+  Inbound soft reconfiguration allowed
+  NEXT_HOP is always this router
+  Community attribute sent to this neighbor(both)
+  4 accepted prefixes
+
+  Connections established 1; dropped 0
+  Last reset never
+Local host: 192.168.1.10, Local port: 179
+Foreign host: 192.168.1.18, Foreign port: 19844
+Nexthop: 192.168.1.10
+Nexthop global: fe80::a00:27ff:fec4:88a7
+Nexthop local: ::
+BGP connection: non shared network
+Read thread: on  Write thread: off
+
+BGP neighbor is 192.168.1.19, remote AS 64514, local AS 64512, external link
+ Description: "leaf-2-node9"
+  BGP version 4, remote router ID 10.2.2.12
+  BGP state = Established, up for 00:11:18
+  Last read 00:00:18, hold time is 180, keepalive interval is 60 seconds
+  Neighbor capabilities:
+    4 Byte AS: advertised and received
+    Route refresh: advertised and received(old & new)
+    Address family IPv4 Unicast: advertised and received
+    Graceful Restart Capabilty: advertised and received
+      Remote Restart timer is 120 seconds
+      Address families by peer:
+        none
+  Graceful restart informations:
+    End-of-RIB send: IPv4 Unicast
+    End-of-RIB received: IPv4 Unicast
+  Message statistics:
+    Inq depth is 0
+    Outq depth is 0
+                         Sent       Rcvd
+    Opens:                  1          1
+    Notifications:          0          0
+    Updates:                5          5
+    Keepalives:            13         12
+    Route Refresh:          0          0
+    Capability:             0          0
+    Total:                 19         18
+  Minimum time between advertisement runs is 30 seconds
+
+ For address family: IPv4 Unicast
+  Inbound soft reconfiguration allowed
+  NEXT_HOP is always this router
+  Community attribute sent to this neighbor(both)
+  4 accepted prefixes
+
+  Connections established 1; dropped 0
+  Last reset never
+Local host: 192.168.1.10, Local port: 61990
+Foreign host: 192.168.1.19, Foreign port: 179
+Nexthop: 192.168.1.10
+Nexthop global: fe80::a00:27ff:fec4:88a7
 Nexthop local: ::
 BGP connection: non shared network
 Read thread: on  Write thread: off
 ```
-```
-node0# sh ip bgp summary
-BGP router identifier 10.0.0.10, local AS number 64512
-RIB entries 11, using 1232 bytes of memory
-Peers 2, using 9136 bytes of memory
-
-Neighbor        V         AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
-192.168.1.11    4 64513      42      44        0    0    0 00:37:16        2
-192.168.2.12    4 64514      41      45        0    0    0 00:37:16        2
-
-Total number of neighbors 2
-```
+Now connect to one of the leaf's:
 ```
 vagrant ssh node1
+```
+```
+vagrant@node1:~$ ip route
+default via 10.0.2.2 dev enp0s3
+10.0.2.0/24 dev enp0s3  proto kernel  scope link  src 10.0.2.15
+192.168.1.0/24 dev enp0s9  proto kernel  scope link  src 192.168.1.11
+192.168.2.0/24 dev enp0s10  proto kernel  scope link  src 192.168.2.11
+192.168.10.0/24 dev enp0s16  proto kernel  scope link  src 192.168.10.11
+192.168.20.0/24 via 192.168.1.10 dev enp0s9  proto zebra
+192.168.30.0/24 via 192.168.10.13 dev enp0s16  proto zebra
+192.168.40.0/24 via 192.168.1.10 dev enp0s9  proto zebra
+192.168.50.0/24 via 192.168.10.15 dev enp0s16  proto zebra
+192.168.60.0/24 via 192.168.1.10 dev enp0s9  proto zebra
+192.168.250.0/24 dev enp0s8  proto kernel  scope link  src 192.168.250.11
+```
+```
+sudo vtysh
 ```
 ```
 node1# sh ip bgp summary
 BGP router identifier 10.1.1.11, local AS number 64513
 RIB entries 15, using 1680 bytes of memory
-Peers 3, using 13 KiB of memory
+Peers 4, using 18 KiB of memory
 
 Neighbor        V         AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
-192.168.1.10    4 64512      41      43        0    0    0 00:36:33        5
-192.168.10.13   4 64513      39      45        0    0    0 00:36:40        1
-192.168.10.15   4 64513      40      44        0    0    0 00:36:41        1
+192.168.1.10    4 64512      33      30        0    0    0 00:13:27        4
+192.168.2.17    4 64515      32      34        0    0    0 00:13:27        4
+192.168.10.13   4 64513      20      29        0    0    0 00:16:43        1
+192.168.10.15   4 64513      20      29        0    0    0 00:16:42        1
 
-Total number of neighbors 3
+Total number of neighbors 4
 ```
 ```
 node1# sh ip bgp
@@ -502,21 +336,31 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
 
    Network          Next Hop            Metric LocPrf Weight Path
 *> 192.168.1.0      192.168.1.10             0             0 64512 i
-*> 192.168.2.0      192.168.1.10             0             0 64512 i
+*> 192.168.2.0      192.168.2.17             0             0 64515 i
 *> 192.168.10.0     0.0.0.0                  0         32768 i
 *> 192.168.20.0     192.168.1.10                           0 64512 64514 i
+*                   192.168.2.17                           0 64515 64514 i
 *>i192.168.30.0     192.168.10.13            0    100      0 i
 *> 192.168.40.0     192.168.1.10                           0 64512 64514 i
+*                   192.168.2.17                           0 64515 64514 i
 *>i192.168.50.0     192.168.10.15            0    100      0 i
 *> 192.168.60.0     192.168.1.10                           0 64512 64514 i
+*                   192.168.2.17                           0 64515 64514 i
 
 Total number of prefixes 8
 ```
 
+Feel free to do some further validations by using the Topology diagram as your
+guide. Remember, every node is configured as a BGP router, including the compute
+nodes. Also validate that by shutting down different nodes that you do not lose
+connectivity to any other node. Also check [Docker] swarm cluster status.
+
 [Docker] Swarm
 ------------
-This lab also has a fully functional [Docker] swarm cluster. The following nodes
-participate in the cluster:
+This lab also has a fully functional [Docker] swarm cluster. The managers and
+workers are split across stacks to provide resiliency of each stack. Ideally
+there would be 3 managers, but wanted to keep the constraints low. The
+following nodes participate in the cluster:
 * node3 - [Docker] swarm manager
 * node4 - [Docker] swarm manager
 * node5 - [Docker] swarm worker

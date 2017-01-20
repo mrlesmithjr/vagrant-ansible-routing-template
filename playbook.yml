@@ -27,12 +27,14 @@
   become: true
   vars:
   pre_tasks:
+     # Checking for BGP network to be successfully up and running.
+     # We do these checks to the Spines from each Docker swarm node.
     - name: Giving BGP Time To Come Up
       wait_for:
-        host: 192.168.1.10
+        host: "{{ item }}"
         port: 22
-    # - name: Giving BGP Time To Come Up
-    #   pause:
-    #     seconds: 30
+      with_items:
+        - '192.168.1.10'
+        - '192.168.2.17'
   roles:
     - role: ansible-docker-swarm

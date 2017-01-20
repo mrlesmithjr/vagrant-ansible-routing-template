@@ -7,7 +7,7 @@
 # you're doing.
 
 # ---- Define number of nodes to spin up ----
-N = 7
+N = 10
 
 # ---- Define any custom memory/cpu requirement ----
 # if custom requirements are desired...ensure to set
@@ -70,13 +70,6 @@ additional_nic_assignments = [
     :node => "node0"
   },
   {
-    :auto_config => false,
-    :ip => "192.168.2.10",
-    :method => "static",
-    :network_name => "spine-leaf-2",
-    :node => "node0"
-  },
-  {
     :auto_config => true,
     :ip => "192.168.250.11",
     :method => "static",
@@ -92,6 +85,13 @@ additional_nic_assignments = [
   },
   {
     :auto_config => false,
+    :ip => "192.168.2.11",
+    :method => "static",
+    :network_name => "spine-leaf-2",
+    :node => "node1"
+  },
+  {
+    :auto_config => false,
     :ip => "192.168.10.11",
     :method => "static",
     :network_name => "compute-1",
@@ -102,6 +102,13 @@ additional_nic_assignments = [
     :ip => "192.168.250.12",
     :method => "static",
     # :network_name => "management",
+    :node => "node2"
+  },
+  {
+    :auto_config => false,
+    :ip => "192.168.1.12",
+    :method => "static",
+    :network_name => "spine-leaf-1",
     :node => "node2"
   },
   {
@@ -201,6 +208,76 @@ additional_nic_assignments = [
     :method => "static",
     :network_name => "workloads-6",
     :node => "node6"
+  },
+  {
+    :auto_config => true,
+    :ip => "192.168.250.17",
+    :method => "static",
+    # :network_name => "management",
+    :node => "node7"
+  },
+  {
+    :auto_config => false,
+    :ip => "192.168.2.17",
+    :method => "static",
+    :network_name => "spine-leaf-2",
+    :node => "node7"
+  },
+  {
+    :auto_config => true,
+    :ip => "192.168.250.18",
+    :method => "static",
+    # :network_name => "management",
+    :node => "node8"
+  },
+  {
+    :auto_config => false,
+    :ip => "192.168.1.18",
+    :method => "static",
+    :network_name => "spine-leaf-1",
+    :node => "node8"
+  },
+  {
+    :auto_config => false,
+    :ip => "192.168.2.18",
+    :method => "static",
+    :network_name => "spine-leaf-2",
+    :node => "node8"
+  },
+  {
+    :auto_config => false,
+    :ip => "192.168.10.18",
+    :method => "static",
+    :network_name => "compute-1",
+    :node => "node8"
+  },
+  {
+    :auto_config => true,
+    :ip => "192.168.250.19",
+    :method => "static",
+    # :network_name => "management",
+    :node => "node9"
+  },
+  {
+    :auto_config => false,
+    :ip => "192.168.1.19",
+    :method => "static",
+    :network_name => "spine-leaf-1",
+    :node => "node9"
+  },
+  {
+    :auto_config => false,
+    :ip => "192.168.2.19",
+    :method => "static",
+    :network_name => "spine-leaf-2",
+    :node => "node9"
+  },
+  {
+    :auto_config => false,
+    :ip => "192.168.20.19",
+    :method => "static",
+    :network_name => "compute-2",
+    :node => "node9"
   }
 ]
 #Define if add'l network adapters are auto configured addresses (true|false)
@@ -210,8 +287,8 @@ additional_nics_dhcp = false
 #Define the number of additional nics to add
 additional_nics_num = 4
 ansible_groups = {
-  "spines" => ["node0"],
-  "leafs" => ["node[1:2]"],
+  "spines" => ["node0", "node7"],
+  "leafs" => ["node[1:2]", "node[8:9]"],
   "quagga-routers:children" => ["spines", "leafs", "compute-nodes"],
   "compute-nodes" => ["node[3:6]"],
   "docker-swarm:children" => ["docker-swarm-managers", "docker-swarm-workers"],

@@ -37,6 +37,9 @@ router bgp {{ item.local_as }}
 {%       endif %}
 {%     for nbr in item.neighbors %}
  neighbor {{ nbr.neighbor }} remote-as {{ nbr.remote_as }}
+{%       if nbr.announce_default_route is defined and nbr.announce_default_route %}
+ neighbor {{ nbr.neighbor }} default-originate
+{%       endif %}
 {%       if nbr.description is defined %}
  neighbor {{ nbr.neighbor }} description "{{ nbr.description }}"
 {%       endif %}

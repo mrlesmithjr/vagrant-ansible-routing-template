@@ -55,6 +55,7 @@
   register: "interfaces_shutdown"
   with_items: '{{ quagga_interfaces }}'
   when: >
+        quagga_interfaces is defined and
         not item.configure and
         not quagga_defined_interfaces
 
@@ -64,5 +65,45 @@
     state: "absent"
   with_items: '{{ quagga_interfaces }}'
   when: >
+        quagga_interfaces is defined and
         interfaces_shutdown.changed and
+        not quagga_defined_interfaces
+
+- name: config_interfaces | Configuring Bonded Interfaces
+  template:
+    src: "etc/network/interfaces.d/int.cfg.j2"
+    dest: "/etc/network/interfaces.d/{{ item.int }}.cfg"
+  register: "bonded_interfaces_configured"
+  with_items: '{{ quagga_interfaces_bonds }}'
+  when: >
+        quagga_interfaces_bonds is defined and
+        item.configure and
+        not quagga_defined_interfaces
+
+- name: config_interfaces | Restarting Bonded Interfaces
+  shell: bash -c "ifdown {{ item.int }} && ifup {{ item.int }}"
+  with_items: '{{ quagga_interfaces_bonds }}'
+  when: >
+        quagga_interfaces_bonds is defined and
+        item.configure and
+        bonded_interfaces_configured.changed and
+        not quagga_defined_interfaces
+
+- name: config_interfaces | Shutting Down Bonded Interfaces (Un-Configured)
+  shell: bash -c "ifdown {{ item.int }}"
+  register: "bonded_interfaces_shutdown"
+  with_items: '{{ quagga_interfaces_bonds }}'
+  when: >
+        quagga_interfaces_bonds is defined and
+        not item.configure and
+        not quagga_defined_interfaces
+
+- name: config_interfaces | Removing Bonded Interfaces (Un-Configured)
+  file:
+    path: "/etc/network/interfaces.d/{{ item.int }}.cfg"
+    state: "absent"
+  with_items: '{{ quagga_interfaces_bonds }}'
+  when: >
+        quagga_interfaces_bonds is defined and
+        bonded_interfaces_shutdown.changed and
         not quagga_defined_interfaces
