@@ -1,0 +1,29 @@
+---
+quagga_interfaces:
+  - int: 'enp0s9'
+    configure: true
+    method: 'static'
+    address: '192.168.10.15'
+    # gateway: '10.1.1.1'
+    cidr: '24'
+    netmask: '255.255.255.0'
+  #   addl_settings:
+  #     - 'bond_master bond0'
+  - int: 'enp0s10'
+    configure: true
+    method: 'static'
+    address: '192.168.50.15'
+    # gateway: '10.1.1.1'
+    cidr: '24'
+    netmask: '255.255.255.0'
+  #   addl_settings:
+  #     - 'bond_master bond0
+quagga_interfaces_lo:
+  - int: "lo{{ ':' }}0"
+    address: '10.5.5.15/32'
+    method: 'static'
+    configure: true
+quagga_ospf_area_config:
+  - network: '192.168.3.0/24'
+    area: '{{ quagga_ospf_area }}'
+quagga_ospf_routerid: '10.5.5.15'

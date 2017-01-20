@@ -4,6 +4,7 @@ quagga_bgp_router_configs:
     local_as: '64512'
     neighbors:
       - neighbor: '192.168.1.11'
+        announce_default_route: false
         description: 'leaf-1-node1'
         remote_as: '64513'
         # prefix_lists: # Define specific BGP neighbore prefix lists
@@ -11,22 +12,16 @@ quagga_bgp_router_configs:
         #     direction: 'out' # define direction (in|out)
         #     orf: 'send' # Define outbound route filter (send|receive|both)
       - neighbor: '192.168.2.12'
+        announce_default_route: false
         description: 'leaf-2-node2'
         # prefix_lists:
         #   - name: 'FILTER02-in'
         #     direction: 'in'
         #     orf: 'receive'
         remote_as: '64514'
-      # - neighbor: '192.168.3.13'
-      #   description: 'node3'
-      #   remote_as: '64514'
     network_advertisements:  #networks to advertise
-      # - '10.0.0.10/32'
-      # - '192.168.1.10/32'
-      # - '192.168.2.10/32'
       - '192.168.1.0/24'
       - '192.168.2.0/24'
-      # - '192.168.3.0/24'
     router_id: '10.0.0.10'
     # prefix_lists:
     #   - name: 'FILTER01-out'
@@ -49,38 +44,29 @@ quagga_bgp_router_configs:
     local_as: '64513'
     neighbors:
       - neighbor: '192.168.1.10'
+        announce_default_route: false
         description: 'spine-1-node0'
         remote_as: '64512'
         # prefix_lists:
         #   - name: 'FILTER01-in'
         #     direction: 'in'
         #     orf: 'receive'
-      # - neighbor: '192.168.2.12'
-      #   description: 'spine-2-node2'
-      #   remote_as: '64513'
       - neighbor: '192.168.10.13'
+        announce_default_route: false
         description: 'compute-1-node3'
         remote_as: '64513'
+      - neighbor: '192.168.10.15'
+        announce_default_route: false
+        description: 'compute-1-node5'
+        remote_as: '64513'
     network_advertisements:  #networks to advertise
-      # - '10.1.1.11/32'
-      # - '192.168.1.0/24'
-      # - '192.168.1.10/32'
       - '192.168.10.0/24'
-      # - '192.168.10.11/32'
-      # - '192.168.10.13/32'
-      # - '192.168.2.10/32'
-      # - '192.168.20.0/24'
-      # - '192.168.20.11/32'
-      # - '192.168.20.13/32'
-      # - '192.168.30.0/24'
     router_id: '10.1.1.11'
   - name: 'node2'
     local_as: '64514'
     neighbors:
-      # - neighbor: '192.168.1.11'
-      #   description: 'spine-1-node1'
-      #   remote_as: '64513'
       - neighbor: '192.168.2.10'
+        announce_default_route: false
         description: 'spine-1-node0'
         # prefix_lists:
         #   - name: 'FILTER02-out'
@@ -88,18 +74,15 @@ quagga_bgp_router_configs:
         #     orf: 'send'
         remote_as: '64512'
       - neighbor: '192.168.20.14'
+        announce_default_route: false
         description: 'compute-2-node4'
         remote_as: '64514'
+      - neighbor: '192.168.20.16'
+        announce_default_route: false
+        description: 'compute-2-node6'
+        remote_as: '64514'
     network_advertisements:  #networks to advertise
-      # - '10.2.2.12/32'
-      # - '192.168.2.0/24'
-      # - '192.168.10.0/24'
-      # - '192.168.10.12/32'
-      # - '192.168.10.14/32'
       - '192.168.20.0/24'
-      # - '192.168.20.12/32'
-      # - '192.168.20.14/32'
-      # - '192.168.40.0/24'
     # prefix_lists:
     #   - name: 'FILTER02-out'
     #     action: 'permit'
@@ -114,38 +97,42 @@ quagga_bgp_router_configs:
     local_as: '64513'
     neighbors:
       - neighbor: '192.168.10.11'
+        announce_default_route: false
         description: 'leaf-1-node1'
         remote_as: '64513'
-      # - neighbor: '192.168.20.12'
-      #   description: 'leaf-2-node2'
-      #   remote_as: '64513'
     network_advertisements:  #networks to advertise
-      # - '10.3.3.13/32'
-      # - '192.168.3.0/24'
-      # - '192.168.10.13/32'
-      # - '192.168.20.13/32'
-      # - '192.168.10.0/24'
-      # - '192.168.20.0/24'
       - '192.168.30.0/24'
     router_id: '10.3.3.13'
   - name: 'node4'
     local_as: '64514'
     neighbors:
-      # - neighbor: '192.168.10.11'
-      #   description: 'leaf-1-node1'
-      #   remote_as: '64513'
       - neighbor: '192.168.20.12'
+        announce_default_route: false
         description: 'leaf-2-node2'
         remote_as: '64514'
     network_advertisements:  #networks to advertise
-      # - '10.3.3.13/32'
-      # - '192.168.3.0/24'
-      # - '192.168.10.14/32'
-      # - '192.168.20.14/32'
-      # - '192.168.10.0/24'
-      # - '192.168.20.0/24'
       - '192.168.40.0/24'
     router_id: '10.4.4.14'
+  - name: 'node5'
+    local_as: '64513'
+    neighbors:
+      - neighbor: '192.168.10.11'
+        announce_default_route: false
+        description: 'leaf-1-node1'
+        remote_as: '64513'
+    network_advertisements:  #networks to advertise
+      - '192.168.50.0/24'
+    router_id: '10.5.5.15'
+  - name: 'node6'
+    local_as: '64514'
+    neighbors:
+      - neighbor: '192.168.20.12'
+        announce_default_route: false
+        description: 'leaf-2-node2'
+        remote_as: '64514'
+    network_advertisements:  #networks to advertise
+      - '192.168.60.0/24'
+    router_id: '10.6.6.16'
 quagga_config_bgpd: true #defines if quagga bgpd should be configured based on quagga_bgp_router_configs...makes it easy to disable auto routing in order to define your routes manually
 quagga_config_interfaces: true
 quagga_config_ospfd: false  #defines if quagga ospfd should be configured based on quagga_ospf_ vars...makes it easy to disable auto routing in order to define your routes manually

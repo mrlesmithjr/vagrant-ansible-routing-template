@@ -7,7 +7,7 @@
 # you're doing.
 
 # ---- Define number of nodes to spin up ----
-N = 5
+N = 7
 
 # ---- Define any custom memory/cpu requirement ----
 # if custom requirements are desired...ensure to set
@@ -25,6 +25,18 @@ nodes = [
   },
   {
     :node => "node4",
+    :box => "mrlesmithjr/xenial64",
+    :cpu => 1,
+    :mem => 1024
+  },
+  {
+    :node => "node5",
+    :box => "mrlesmithjr/xenial64",
+    :cpu => 1,
+    :mem => 1024
+  },
+  {
+    :node => "node6",
     :box => "mrlesmithjr/xenial64",
     :cpu => 1,
     :mem => 1024
@@ -64,13 +76,6 @@ additional_nic_assignments = [
     :network_name => "spine-leaf-2",
     :node => "node0"
   },
-  # {
-  #   :auto_config => true,
-  #   :ip => "192.168.3.10",
-  #   :method => "static",
-  #   :network_name => "net-03",
-  #   :node => "node0"
-  # },
   {
     :auto_config => true,
     :ip => "192.168.250.11",
@@ -92,13 +97,6 @@ additional_nic_assignments = [
     :network_name => "compute-1",
     :node => "node1"
   },
-  # {
-  #   :auto_config => true,
-  #   :ip => "192.168.20.11",
-  #   :method => "static",
-  #   :network_name => "compute-2",
-  #   :node => "node1"
-  # },
   {
     :auto_config => true,
     :ip => "192.168.250.12",
@@ -113,13 +111,6 @@ additional_nic_assignments = [
     :network_name => "spine-leaf-2",
     :node => "node2"
   },
-  # {
-  #   :auto_config => true,
-  #   :ip => "192.168.10.12",
-  #   :method => "static",
-  #   :network_name => "compute-1",
-  #   :node => "node2"
-  # },
   {
     :auto_config => false,
     :ip => "192.168.20.12",
@@ -141,13 +132,6 @@ additional_nic_assignments = [
     :network_name => "compute-1",
     :node => "node3"
   },
-  # {
-  #   :auto_config => true,
-  #   :ip => "192.168.20.13",
-  #   :method => "static",
-  #   :network_name => "compute-2",
-  #   :node => "node3"
-  # },
   {
     :auto_config => false,
     :ip => "192.168.30.13",
@@ -162,13 +146,6 @@ additional_nic_assignments = [
     # :network_name => "management",
     :node => "node4"
   },
-  # {
-  #   :auto_config => true,
-  #   :ip => "192.168.10.14",
-  #   :method => "static",
-  #   :network_name => "compute-1",
-  #   :node => "node4"
-  # },
   {
     :auto_config => false,
     :ip => "192.168.20.14",
@@ -182,6 +159,48 @@ additional_nic_assignments = [
     :method => "static",
     :network_name => "workloads-4",
     :node => "node4"
+  },
+  {
+    :auto_config => true,
+    :ip => "192.168.250.15",
+    :method => "static",
+    # :network_name => "management",
+    :node => "node5"
+  },
+  {
+    :auto_config => false,
+    :ip => "192.168.10.15",
+    :method => "static",
+    :network_name => "compute-1",
+    :node => "node5"
+  },
+  {
+    :auto_config => false,
+    :ip => "192.168.50.15",
+    :method => "static",
+    :network_name => "workloads-5",
+    :node => "node5"
+  },
+  {
+    :auto_config => true,
+    :ip => "192.168.250.16",
+    :method => "static",
+    # :network_name => "management",
+    :node => "node6"
+  },
+  {
+    :auto_config => false,
+    :ip => "192.168.20.16",
+    :method => "static",
+    :network_name => "compute-2",
+    :node => "node6"
+  },
+  {
+    :auto_config => false,
+    :ip => "192.168.60.16",
+    :method => "static",
+    :network_name => "workloads-6",
+    :node => "node6"
   }
 ]
 #Define if add'l network adapters are auto configured addresses (true|false)
@@ -194,7 +213,10 @@ ansible_groups = {
   "spines" => ["node0"],
   "leafs" => ["node[1:2]"],
   "quagga-routers:children" => ["spines", "leafs", "compute-nodes"],
-  "compute-nodes" => ["node[3:4]"]
+  "compute-nodes" => ["node[3:6]"],
+  "docker-swarm:children" => ["docker-swarm-managers", "docker-swarm-workers"],
+  "docker-swarm-managers" => ["node[3:4]"],
+  "docker-swarm-workers" => ["node[5:6]"]
 }
 #Define Vagrant box to load
 box = "mrlesmithjr/xenial64"

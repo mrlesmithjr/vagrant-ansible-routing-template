@@ -21,3 +21,18 @@
   vars:
   roles:
     - role: ansible-docker
+
+- hosts: docker-swarm
+  remote_user: vagrant
+  become: true
+  vars:
+  pre_tasks:
+    - name: Giving BGP Time To Come Up
+      wait_for:
+        host: 192.168.1.10
+        port: 22
+    # - name: Giving BGP Time To Come Up
+    #   pause:
+    #     seconds: 30
+  roles:
+    - role: ansible-docker-swarm

@@ -8,6 +8,32 @@ link. http://everythingshouldbevirtual.com/hey-i-can-devops-my-network-too-intro
 * Note: The above blog post is out of date until it is updated based on the new
 configuration here.
 
+This lab will spin up 7 nodes in a spine leaf simulation with BGP routing between
+all nodes including the compute nodes. The compute nodes are running [Docker] so
+you can experiment with running some containers in this environment as well. All
+[Docker] compute nodes participate in a [Docker] swarm cluster as well.
+
+* node0 - Spine
+* node1|node2 - Leafs
+* node3|node4 - Compute/Docker Swarm Managers
+* node5|node6 - Compute/Docker Swarm Workers
+
+Topology
+--------
+![Screenshot](spine-leaf-compute.png)
+
+Each node has a management interface which is used to provision the nodes via
+[Ansible], as well as on the compute nodes which are participating in the
+[Docker] swarm cluster you can connect to the services running using the management
+interface IP addresses.
+* node0 - 192.168.250.10
+* node1 - 192.168.250.11
+* node2 - 192.168.250.12
+* node3 - 192.168.250.13
+* node4 - 192.168.250.14
+* node5 - 192.168.250.15
+* node6 - 192.168.250.16
+
 Requirements
 ------------
 
@@ -121,6 +147,25 @@ quagga_enable_ospfd: false
 `host_vars/node0/quagga.yml`
 ```
 ---
+quagga_interfaces:
+  - int: 'enp0s9'
+    configure: true
+    method: 'static'
+    address: '192.168.1.10'
+    # gateway: '10.1.1.1'
+    cidr: '24'
+    netmask: '255.255.255.0'
+  #   addl_settings:
+  #     - 'bond_master bond0'
+  - int: 'enp0s10'
+    configure: true
+    method: 'static'
+    address: '192.168.2.10'
+    # gateway: '10.1.1.1'
+    cidr: '24'
+    netmask: '255.255.255.0'
+  #   addl_settings:
+  #     - 'bond_master bond0'
 quagga_interfaces_lo:
   - int: "lo{{ ':' }}0"
     address: '10.0.0.10/32'
@@ -142,11 +187,29 @@ quagga_ospf_area_config:
   - network: '192.168.3.0/24'
     area: '{{ quagga_ospf_area }}'
 quagga_ospf_routerid: '10.0.0.10'
-
 ```
 `host_vars/node1/quagga.yml`
 ```
 ---
+quagga_interfaces:
+  - int: 'enp0s9'
+    configure: true
+    method: 'static'
+    address: '192.168.1.11'
+    # gateway: '10.1.1.1'
+    cidr: '24'
+    netmask: '255.255.255.0'
+  #   addl_settings:
+  #     - 'bond_master bond0'
+  - int: 'enp0s10'
+    configure: true
+    method: 'static'
+    address: '192.168.10.11'
+    # gateway: '10.1.1.1'
+    cidr: '24'
+    netmask: '255.255.255.0'
+  #   addl_settings:
+  #     - 'bond_master bond0'
 quagga_interfaces_lo:
   - int: "lo{{ ':' }}0"
     address: '10.1.1.11/32'
@@ -160,6 +223,25 @@ quagga_ospf_routerid: '10.1.1.11'
 `host_vars/node2/quagga.yml`
 ```
 ---
+quagga_interfaces:
+  - int: 'enp0s9'
+    configure: true
+    method: 'static'
+    address: '192.168.2.12'
+    # gateway: '10.1.1.1'
+    cidr: '24'
+    netmask: '255.255.255.0'
+  #   addl_settings:
+  #     - 'bond_master bond0'
+  - int: 'enp0s10'
+    configure: true
+    method: 'static'
+    address: '192.168.20.12'
+    # gateway: '10.1.1.1'
+    cidr: '24'
+    netmask: '255.255.255.0'
+  #   addl_settings:
+  #     - 'bond_master bond0'
 quagga_interfaces_lo:
   - int: "lo{{ ':' }}0"
     address: '10.2.2.12/32'
@@ -173,6 +255,25 @@ quagga_ospf_routerid: '10.2.2.12'
 `host_vars/node3/quagga.yml`
 ```
 ---
+quagga_interfaces:
+  - int: 'enp0s9'
+    configure: true
+    method: 'static'
+    address: '192.168.10.13'
+    # gateway: '10.1.1.1'
+    cidr: '24'
+    netmask: '255.255.255.0'
+  #   addl_settings:
+  #     - 'bond_master bond0'
+  - int: 'enp0s10'
+    configure: true
+    method: 'static'
+    address: '192.168.30.13'
+    # gateway: '10.1.1.1'
+    cidr: '24'
+    netmask: '255.255.255.0'
+  #   addl_settings:
+  #     - 'bond_master bond0
 quagga_interfaces_lo:
   - int: "lo{{ ':' }}0"
     address: '10.3.3.13/32'
@@ -183,13 +284,45 @@ quagga_ospf_area_config:
     area: '{{ quagga_ospf_area }}'
 quagga_ospf_routerid: '10.3.3.13'
 ```
-
+`host_vars/node4/quagga.yml`
+```
+---
+quagga_interfaces:
+  - int: 'enp0s9'
+    configure: true
+    method: 'static'
+    address: '192.168.20.14'
+    # gateway: '10.1.1.1'
+    cidr: '24'
+    netmask: '255.255.255.0'
+  #   addl_settings:
+  #     - 'bond_master bond0'
+  - int: 'enp0s10'
+    configure: true
+    method: 'static'
+    address: '192.168.40.14'
+    # gateway: '10.1.1.1'
+    cidr: '24'
+    netmask: '255.255.255.0'
+  #   addl_settings:
+  #     - 'bond_master bond0
+quagga_interfaces_lo:
+  - int: "lo{{ ':' }}0"
+    address: '10.4.4.14/32'
+    method: 'static'
+    configure: true
+quagga_ospf_area_config:
+  - network: '192.168.3.0/24'
+    area: '{{ quagga_ospf_area }}'
+quagga_ospf_routerid: '10.4.4.14'
+```
 Usage
 -----
 
 ```
 git clone https://github.com/mrlesmithjr/vagrant-ansible-routing-template.git
 cd vagrant-ansible-routing-template
+git checkout spine-leaf-compute
 ```
 
 Spin up your environment
@@ -197,179 +330,9 @@ Spin up your environment
 vagrant up
 ```
 
-##### OSPF
+BGP
+---
 
-If you define `quagga_enable_ospfd: true`, `quagga_config_ospfd: true`,
-`quagga_config_bgpd: false`, and `quagga_enable_bgpd: false` in
-`group_vars/quagga-routers/quagga.yml` and then run
-`ansible-playbook -i hosts playbook.yml` to configure OSPF you can then do some
-validation by running the following commands:
-```
-vagrant ssh node0
-```
-Validate your IP routes:
-```
-vagrant@node0:~$ ip route
-default via 10.0.2.2 dev enp0s3
-10.0.2.0/24 dev enp0s3  proto kernel  scope link  src 10.0.2.15
-10.1.1.11 via 192.168.1.11 dev enp0s9  proto zebra  metric 20
-10.2.2.12 via 192.168.2.12 dev enp0s10  proto zebra  metric 20
-10.3.3.13 via 192.168.3.13 dev enp0s16  proto zebra  metric 20
-192.168.1.0/24 dev enp0s9  proto kernel  scope link  src 192.168.1.10
-192.168.2.0/24 dev enp0s10  proto kernel  scope link  src 192.168.2.10
-192.168.3.0/24 dev enp0s16  proto kernel  scope link  src 192.168.3.10
-192.168.250.0/24 dev enp0s8  proto kernel  scope link  src 192.168.250.10
-```
-Now telnet to the ospfd daemon and run some additional validations:
-```
-telnet localhost 2604
-```
-Enter `quagga` for the password:
-```
-node0> sh ip ospf neighbor
-
-    Neighbor ID Pri State           Dead Time Address         Interface            RXmtL RqstL DBsmL
-10.1.1.11         1 Full/DR           31.979s 192.168.1.11    enp0s9:192.168.1.10      0     0     0
-10.2.2.12         1 Full/DR           31.972s 192.168.2.12    enp0s10:192.168.2.10     0     0     0
-10.3.3.13         1 Full/DR           31.996s 192.168.3.13    enp0s16:192.168.3.10     0     0     0
-```
-Additional sh ip ospf commands.
-```
-node0> sh ip ospf border-routers
-============ OSPF router routing table =============
-R    10.1.1.11             [10] area: 0.0.0.51, ASBR
-                           via 192.168.1.11, enp0s9
-R    10.2.2.12             [10] area: 0.0.0.51, ASBR
-                           via 192.168.2.12, enp0s10
-R    10.3.3.13             [10] area: 0.0.0.51, ASBR
-                           via 192.168.3.13, enp0s16
-```
-```
-node0> sh ip ospf database
-
-       OSPF Router with ID (10.0.0.10)
-
-                Router Link States (Area 0.0.0.51)
-
-Link ID         ADV Router      Age  Seq#       CkSum  Link count
-10.0.0.10       10.0.0.10        366 0x8000000b 0xd547 3
-10.1.1.11       10.1.1.11        366 0x80000004 0x9695 1
-10.2.2.12       10.2.2.12        371 0x80000004 0x8e93 1
-10.3.3.13       10.3.3.13        371 0x80000004 0x8691 1
-
-                Net Link States (Area 0.0.0.51)
-
-Link ID         ADV Router      Age  Seq#       CkSum
-192.168.1.11    10.1.1.11        367 0x80000001 0x772b
-192.168.2.12    10.2.2.12        372 0x80000001 0x7426
-192.168.3.13    10.3.3.13        372 0x80000001 0x7121
-
-                AS External Link States
-
-Link ID         ADV Router      Age  Seq#       CkSum  Route
-10.0.0.10       10.0.0.10        366 0x80000005 0x266c E2 10.0.0.10/32 [0x0]
-10.0.2.0        10.0.0.10        366 0x80000005 0x7426 E2 10.0.2.0/24 [0x0]
-10.0.2.0        10.1.1.11        366 0x80000002 0x6535 E2 10.0.2.0/24 [0x0]
-10.0.2.0        10.2.2.12        371 0x80000002 0x5047 E2 10.0.2.0/24 [0x0]
-10.0.2.0        10.3.3.13        371 0x80000002 0x3b59 E2 10.0.2.0/24 [0x0]
-10.1.1.11       10.1.1.11        366 0x80000002 0xf599 E2 10.1.1.11/32 [0x0]
-10.2.2.12       10.2.2.12        371 0x80000002 0xbfc9 E2 10.2.2.12/32 [0x0]
-10.3.3.13       10.3.3.13        371 0x80000002 0x89f9 E2 10.3.3.13/32 [0x0]
-192.168.250.0   10.0.0.10        366 0x80000005 0x92af E2 192.168.250.0/24 [0x0]
-192.168.250.0   10.1.1.11        366 0x80000003 0x81bf E2 192.168.250.0/24 [0x0]
-192.168.250.0   10.2.2.12        371 0x80000003 0x6cd1 E2 192.168.250.0/24 [0x0]
-192.168.250.0   10.3.3.13        371 0x80000003 0x57e3 E2 192.168.250.0/24 [0x0]
-```
-```
-node0> sh ip ospf interface
-enp0s3 is up
-  ifindex 2, MTU 1500 bytes, BW 0 Kbit <UP,BROADCAST,RUNNING,MULTICAST>
-  OSPF not enabled on this interface
-enp0s8 is up
-  ifindex 3, MTU 1500 bytes, BW 0 Kbit <UP,BROADCAST,RUNNING,MULTICAST>
-  OSPF not enabled on this interface
-enp0s9 is up
-  ifindex 4, MTU 1500 bytes, BW 0 Kbit <UP,BROADCAST,RUNNING,MULTICAST>
-  Internet Address 192.168.1.10/24, Broadcast 192.168.1.255, Area 0.0.0.51
-  MTU mismatch detection:enabled
-  Router ID 10.0.0.10, Network Type BROADCAST, Cost: 10
-  Transmit Delay is 1 sec, State Backup, Priority 1
-  Designated Router (ID) 10.1.1.11, Interface Address 192.168.1.11
-  Backup Designated Router (ID) 10.0.0.10, Interface Address 192.168.1.10
-  Multicast group memberships: OSPFAllRouters OSPFDesignatedRouters
-  Timer intervals configured, Hello 10s, Dead 40s, Wait 40s, Retransmit 5
-    Hello due in 4.123s
-  Neighbor Count is 1, Adjacent neighbor count is 1
-enp0s10 is up
-  ifindex 5, MTU 1500 bytes, BW 0 Kbit <UP,BROADCAST,RUNNING,MULTICAST>
-  Internet Address 192.168.2.10/24, Broadcast 192.168.2.255, Area 0.0.0.51
-  MTU mismatch detection:enabled
-  Router ID 10.0.0.10, Network Type BROADCAST, Cost: 10
-  Transmit Delay is 1 sec, State Backup, Priority 1
-  Designated Router (ID) 10.2.2.12, Interface Address 192.168.2.12
-  Backup Designated Router (ID) 10.0.0.10, Interface Address 192.168.2.10
-  Multicast group memberships: OSPFAllRouters OSPFDesignatedRouters
-  Timer intervals configured, Hello 10s, Dead 40s, Wait 40s, Retransmit 5
-    Hello due in 4.123s
-  Neighbor Count is 1, Adjacent neighbor count is 1
-enp0s16 is up
-  ifindex 6, MTU 1500 bytes, BW 0 Kbit <UP,BROADCAST,RUNNING,MULTICAST>
-  Internet Address 192.168.3.10/24, Broadcast 192.168.3.255, Area 0.0.0.51
-  MTU mismatch detection:enabled
-  Router ID 10.0.0.10, Network Type BROADCAST, Cost: 10
-  Transmit Delay is 1 sec, State Backup, Priority 1
-  Designated Router (ID) 10.3.3.13, Interface Address 192.168.3.13
-  Backup Designated Router (ID) 10.0.0.10, Interface Address 192.168.3.10
-  Multicast group memberships: OSPFAllRouters OSPFDesignatedRouters
-  Timer intervals configured, Hello 10s, Dead 40s, Wait 40s, Retransmit 5
-    Hello due in 4.123s
-  Neighbor Count is 1, Adjacent neighbor count is 1
-lo is up
-  ifindex 1, MTU 65536 bytes, BW 0 Kbit <UP,LOOPBACK,RUNNING>
-  OSPF not enabled on this interface
-```
-```
-node0> sh ip ospf route
-============ OSPF network routing table ============
-N    192.168.1.0/24        [10] area: 0.0.0.51
-                           directly attached to enp0s9
-N    192.168.2.0/24        [10] area: 0.0.0.51
-                           directly attached to enp0s10
-N    192.168.3.0/24        [10] area: 0.0.0.51
-                           directly attached to enp0s16
-
-============ OSPF router routing table =============
-R    10.1.1.11             [10] area: 0.0.0.51, ASBR
-                           via 192.168.1.11, enp0s9
-R    10.2.2.12             [10] area: 0.0.0.51, ASBR
-                           via 192.168.2.12, enp0s10
-R    10.3.3.13             [10] area: 0.0.0.51, ASBR
-                           via 192.168.3.13, enp0s16
-
-============ OSPF external routing table ===========
-N E2 10.0.2.0/24           [10/20] tag: 0
-                           via 192.168.1.11, enp0s9
-                           via 192.168.2.12, enp0s10
-                           via 192.168.3.13, enp0s16
-N E2 10.1.1.11/32          [10/20] tag: 0
-                           via 192.168.1.11, enp0s9
-N E2 10.2.2.12/32          [10/20] tag: 0
-                           via 192.168.2.12, enp0s10
-N E2 10.3.3.13/32          [10/20] tag: 0
-                           via 192.168.3.13, enp0s16
-N E2 192.168.250.0/24      [10/20] tag: 0
-                           via 192.168.1.11, enp0s9
-                           via 192.168.2.12, enp0s10
-                           via 192.168.3.13, enp0s16
-```
-
-##### BGP
-
-If you define `quagga_enable_ospfd: false`, `quagga_config_ospfd: false`,
-`quagga_config_bgpd: true`, and `quagga_enable_bgpd: true` in
-`group_vars/quagga-routers/quagga.yml` and then run
-`ansible-playbook -i hosts playbook.yml` to configure BGP you can then do some
-validation by running the following commands:
 ```
 vagrant ssh node0
 ```
@@ -377,99 +340,46 @@ vagrant ssh node0
 vagrant@node0:~$ ip route
 default via 10.0.2.2 dev enp0s3
 10.0.2.0/24 dev enp0s3  proto kernel  scope link  src 10.0.2.15
-10.1.1.11 via 192.168.1.11 dev enp0s9  proto zebra
-10.3.3.13 via 192.168.3.13 dev enp0s16  proto zebra
 192.168.1.0/24 dev enp0s9  proto kernel  scope link  src 192.168.1.10
 192.168.2.0/24 dev enp0s10  proto kernel  scope link  src 192.168.2.10
-192.168.3.0/24 dev enp0s16  proto kernel  scope link  src 192.168.3.10
+192.168.10.0/24 via 192.168.1.11 dev enp0s9  proto zebra
+192.168.20.0/24 via 192.168.2.12 dev enp0s10  proto zebra
+192.168.30.0/24 via 192.168.1.11 dev enp0s9  proto zebra
+192.168.40.0/24 via 192.168.2.12 dev enp0s10  proto zebra
+192.168.50.0/24 via 192.168.1.11 dev enp0s9  proto zebra
+192.168.60.0/24 via 192.168.2.12 dev enp0s10  proto zebra
 192.168.250.0/24 dev enp0s8  proto kernel  scope link  src 192.168.250.10
 ```
-Now telnet to the bgpd daemon and run some additional validations:
+Now enter the `vtysh` shell and run some additional validations:
 ```
-telnet localhost 2605
+sudo vtysh
 ```
-Enter `quagga` for the password:
 ```
-node0> sh ip bgp
+node0# sh ip bgp
 BGP table version is 0, local router ID is 10.0.0.10
 Status codes: s suppressed, d damped, h history, * valid, > best, = multipath,
               i internal, r RIB-failure, S Stale, R Removed
 Origin codes: i - IGP, e - EGP, ? - incomplete
 
    Network          Next Hop            Metric LocPrf Weight Path
-*> 10.0.0.10/32     0.0.0.0                  0         32768 i
-*>i10.1.1.11/32     192.168.1.11             0    100      0 i
-*> 10.3.3.13/32     192.168.3.13             0             0 64514 i
-* i192.168.1.0      192.168.1.11             0    100      0 i
-*>                  0.0.0.0                  0         32768 i
-*  192.168.2.0      192.168.2.12             0             0 64513 i
-*>                  0.0.0.0                  0         32768 i
-*  192.168.3.0      192.168.3.13             0             0 64514 i
-*>                  0.0.0.0                  0         32768 i
+*> 192.168.1.0      0.0.0.0                  0         32768 i
+*> 192.168.2.0      0.0.0.0                  0         32768 i
+*> 192.168.10.0     192.168.1.11             0             0 64513 i
+*> 192.168.20.0     192.168.2.12             0             0 64514 i
+*> 192.168.30.0     192.168.1.11                           0 64513 i
+*> 192.168.40.0     192.168.2.12                           0 64514 i
+*> 192.168.50.0     192.168.1.11                           0 64513 i
+*> 192.168.60.0     192.168.2.12                           0 64514 i
 
-Total number of prefixes 6
+Total number of prefixes 8
 ```
 ```
-node0> sh ip bgp neighbors
-BGP neighbor is 192.168.1.11, remote AS 64512, local AS 64512, internal link
- Description: "node1"
+node0# sh ip bgp neighbors
+BGP neighbor is 192.168.1.11, remote AS 64513, local AS 64512, external link
+ Description: "leaf-1-node1"
   BGP version 4, remote router ID 10.1.1.11
-  BGP state = Established, up for 00:19:21
-  Last read 00:00:21, hold time is 180, keepalive interval is 60 seconds
-  Neighbor capabilities:
-    4 Byte AS: advertised and received
-    Route refresh: advertised and received(old & new)
-    Address family IPv4 Unicast: advertised and received
-    Graceful Restart Capabilty: advertised and received
-      Remote Restart timer is 120 seconds
-      Address families by peer:
-        none
-  Graceful restart informations:
-    End-of-RIB send: IPv4 Unicast
-    End-of-RIB received: IPv4 Unicast
-  Message statistics:
-    Inq depth is 0
-    Outq depth is 0
-                         Sent       Rcvd
-    Opens:                  2          0
-    Notifications:          0          0
-    Updates:                2          2
-    Keepalives:            21         20
-    Route Refresh:          1          0
-    Capability:             0          0
-    Total:                 26         22
-  Minimum time between advertisement runs is 5 seconds
-
- For address family: IPv4 Unicast
-  AF-dependant capabilities:
-    Outbound Route Filter (ORF) type (64) Prefix-list:
-      Send-mode: advertised
-      Receive-mode: received
-    Outbound Route Filter (ORF) type (128) Prefix-list:
-      Send-mode: advertised
-      Receive-mode: received
-  Inbound soft reconfiguration allowed
-  NEXT_HOP is always this router
-  Community attribute sent to this neighbor(both)
-  Outbound path policy configured
-  Outgoing update prefix filter list is *FILTER01-out
-  2 accepted prefixes
-
-  Connections established 1; dropped 0
-  Last reset never
-Local host: 192.168.1.10, Local port: 179
-Foreign host: 192.168.1.11, Foreign port: 16080
-Nexthop: 192.168.1.10
-Nexthop global: fe80::a00:27ff:fecc:87df
-Nexthop local: ::
-BGP connection: non shared network
-Read thread: on  Write thread: off
-
-BGP neighbor is 192.168.2.12, remote AS 64513, local AS 64512, external link
- Description: "node2"
-  BGP version 4, remote router ID 10.2.2.12
-  BGP state = Established, up for 00:19:17
-  Last read 00:00:17, hold time is 180, keepalive interval is 60 seconds
+  BGP state = Established, up for 00:36:30
+  Last read 00:00:29, hold time is 180, keepalive interval is 60 seconds
   Neighbor capabilities:
     4 Byte AS: advertised and received
     Route refresh: advertised and received(old & new)
@@ -487,41 +397,34 @@ BGP neighbor is 192.168.2.12, remote AS 64513, local AS 64512, external link
                          Sent       Rcvd
     Opens:                  1          1
     Notifications:          0          0
-    Updates:                4          2
-    Keepalives:            21         20
-    Route Refresh:          0          1
+    Updates:                4          3
+    Keepalives:            38         37
+    Route Refresh:          0          0
     Capability:             0          0
-    Total:                 26         24
+    Total:                 43         41
   Minimum time between advertisement runs is 30 seconds
 
  For address family: IPv4 Unicast
-  AF-dependant capabilities:
-    Outbound Route Filter (ORF) type (64) Prefix-list:
-      Send-mode: received
-      Receive-mode: advertised
-    Outbound Route Filter (ORF) type (128) Prefix-list:
-      Send-mode: received
-      Receive-mode: advertised
   Inbound soft reconfiguration allowed
   NEXT_HOP is always this router
   Community attribute sent to this neighbor(both)
-  1 accepted prefixes
+  2 accepted prefixes
 
   Connections established 1; dropped 0
   Last reset never
-Local host: 192.168.2.10, Local port: 19768
-Foreign host: 192.168.2.12, Foreign port: 179
-Nexthop: 192.168.2.10
-Nexthop global: fe80::a00:27ff:fe6a:39a9
+Local host: 192.168.1.10, Local port: 29690
+Foreign host: 192.168.1.11, Foreign port: 179
+Nexthop: 192.168.1.10
+Nexthop global: fe80::a00:27ff:fe4f:f988
 Nexthop local: ::
 BGP connection: non shared network
 Read thread: on  Write thread: off
 
-BGP neighbor is 192.168.3.13, remote AS 64514, local AS 64512, external link
- Description: "node3"
-  BGP version 4, remote router ID 10.3.3.13
-  BGP state = Established, up for 00:19:21
-  Last read 00:00:21, hold time is 180, keepalive interval is 60 seconds
+BGP neighbor is 192.168.2.12, remote AS 64514, local AS 64512, external link
+ Description: "leaf-2-node2"
+  BGP version 4, remote router ID 10.2.2.12
+  BGP state = Established, up for 00:36:30
+  Last read 00:00:29, hold time is 180, keepalive interval is 60 seconds
   Neighbor capabilities:
     4 Byte AS: advertised and received
     Route refresh: advertised and received(old & new)
@@ -539,11 +442,11 @@ BGP neighbor is 192.168.3.13, remote AS 64514, local AS 64512, external link
                          Sent       Rcvd
     Opens:                  2          0
     Notifications:          0          0
-    Updates:                3          2
-    Keepalives:            21         20
+    Updates:                4          3
+    Keepalives:            38         37
     Route Refresh:          0          0
     Capability:             0          0
-    Total:                 26         22
+    Total:                 44         40
   Minimum time between advertisement runs is 30 seconds
 
  For address family: IPv4 Unicast
@@ -554,43 +457,151 @@ BGP neighbor is 192.168.3.13, remote AS 64514, local AS 64512, external link
 
   Connections established 1; dropped 0
   Last reset never
-Local host: 192.168.3.10, Local port: 179
-Foreign host: 192.168.3.13, Foreign port: 44638
-Nexthop: 192.168.3.10
-Nexthop global: fe80::a00:27ff:fe34:abaa
+Local host: 192.168.2.10, Local port: 179
+Foreign host: 192.168.2.12, Foreign port: 9788
+Nexthop: 192.168.2.10
+Nexthop global: fe80::a00:27ff:fe02:6cb7
 Nexthop local: ::
 BGP connection: non shared network
 Read thread: on  Write thread: off
 ```
 ```
-node0> sh ip bgp summary
+node0# sh ip bgp summary
 BGP router identifier 10.0.0.10, local AS number 64512
 RIB entries 11, using 1232 bytes of memory
+Peers 2, using 9136 bytes of memory
+
+Neighbor        V         AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+192.168.1.11    4 64513      42      44        0    0    0 00:37:16        2
+192.168.2.12    4 64514      41      45        0    0    0 00:37:16        2
+
+Total number of neighbors 2
+```
+```
+vagrant ssh node1
+```
+```
+node1# sh ip bgp summary
+BGP router identifier 10.1.1.11, local AS number 64513
+RIB entries 15, using 1680 bytes of memory
 Peers 3, using 13 KiB of memory
 
 Neighbor        V         AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
-192.168.1.11    4 64512      23      27        0    0    0 00:20:06        2
-192.168.2.12    4 64513      25      27        0    0    0 00:20:02        1
-192.168.3.13    4 64514      23      27        0    0    0 00:20:06        2
+192.168.1.10    4 64512      41      43        0    0    0 00:36:33        5
+192.168.10.13   4 64513      39      45        0    0    0 00:36:40        1
+192.168.10.15   4 64513      40      44        0    0    0 00:36:41        1
 
 Total number of neighbors 3
 ```
 ```
-node0> sh ip bgp prefix-list FILTER01-out
-BGP table version is 0, local router ID is 10.0.0.10
+node1# sh ip bgp
+BGP table version is 0, local router ID is 10.1.1.11
 Status codes: s suppressed, d damped, h history, * valid, > best, = multipath,
               i internal, r RIB-failure, S Stale, R Removed
 Origin codes: i - IGP, e - EGP, ? - incomplete
 
    Network          Next Hop            Metric LocPrf Weight Path
-*> 10.0.0.10/32     0.0.0.0                  0         32768 i
-* i192.168.1.0      192.168.1.11             0    100      0 i
-*>                  0.0.0.0                  0         32768 i
-*  192.168.2.0      192.168.2.12             0             0 64513 i
-*>                  0.0.0.0                  0         32768 i
+*> 192.168.1.0      192.168.1.10             0             0 64512 i
+*> 192.168.2.0      192.168.1.10             0             0 64512 i
+*> 192.168.10.0     0.0.0.0                  0         32768 i
+*> 192.168.20.0     192.168.1.10                           0 64512 64514 i
+*>i192.168.30.0     192.168.10.13            0    100      0 i
+*> 192.168.40.0     192.168.1.10                           0 64512 64514 i
+*>i192.168.50.0     192.168.10.15            0    100      0 i
+*> 192.168.60.0     192.168.1.10                           0 64512 64514 i
 
-Total number of prefixes 3
+Total number of prefixes 8
 ```
+
+[Docker] Swarm
+------------
+This lab also has a fully functional [Docker] swarm cluster. The following nodes
+participate in the cluster:
+* node3 - [Docker] swarm manager
+* node4 - [Docker] swarm manager
+* node5 - [Docker] swarm worker
+* node6 - [Docker] swarm worker
+
+```
+vagrant ssh node3
+```
+vagrant@node3:~$ sudo docker node ls
+ID                           HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS
+63qtebcwjey5rr4u9xgckhi36 *  node3     Ready   Active        Leader
+fvbwd68tz7vuc226958vuy96x    node6     Ready   Active
+sfmhmsqaf2gsy4gidprbthbya    node4     Ready   Active        Reachable
+zhvo00r0oyra9h435ydel4prj    node5     Ready   Active
+```
+```
+vagrant@node3:~$ sudo docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+7a885d70df5a        bridge              bridge              local
+b60adc742a0b        docker_gwbridge     bridge              local
+5b575c7af449        host                host                local
+v0ysnbsxx14g        ingress             overlay             swarm
+f8ea47296ee5        none                null                local
+```
+
+Create a web service running NGINX:
+```
+vagrant@node3:~$ sudo docker service create --name web -p 8080:80 nginx
+y50ccsl5x8yct69q574g1ldrp
+```
+Validate the web service is running:
+```
+vagrant@node3:~$ sudo docker service ls
+ID            NAME  MODE        REPLICAS  IMAGE
+y50ccsl5x8yc  web   replicated  1/1       nginx:latest
+```
+You should now be able to connect to the web service on any one of the following
+urls:
+http://192.168.250.13:8080/
+http://192.168.250.14:8080/
+http://192.168.250.15:8080/
+http://192.168.250.16:8080/
+
+Now scale the web service to spin up additional containers:
+```
+vagrant@node3:~$ sudo docker service scale web=3
+web scaled to 3
+```
+Validate that the service scaled up:
+```
+vagrant@node3:~$ sudo docker service ls
+ID            NAME  MODE        REPLICAS  IMAGE
+y50ccsl5x8yc  web   replicated  3/3       nginx:latest
+```
+Show the web service instances:
+```
+vagrant@node3:~$ sudo docker service ps web
+ID            NAME   IMAGE         NODE   DESIRED STATE  CURRENT STATE               ERROR  PORTS
+umgusnq162t4  web.1  nginx:latest  node6  Running        Running 11 minutes ago
+tqefm5er127k  web.2  nginx:latest  node3  Running        Running about a minute ago
+npnob1w5azf7  web.3  nginx:latest  node4  Running        Running 7 minutes ago
+```
+And if you were to connect to one of the containers and validate that you can
+ping the spine `node0 - 192.168.1.10`:
+
+Obtain one of the container ID's of the running web service
+(replace 25ba8ad0a2b1 with your actual container id):
+```
+vagrant@node3:~$ sudo docker ps
+CONTAINER ID        IMAGE                                                                           COMMAND                  CREATED             STATUS              PORTS               NAMES
+25ba8ad0a2b1        nginx@sha256:33ff28a2763feccc1e1071a97960b7fef714d6e17e2d0ff573b74825d0049303   "nginx -g 'daemon ..."   4 minutes ago       Up 4 minutes        80/tcp, 443/tcp     web.2.tqefm5er127kv334y0f0eck2l
+```
+```
+vagrant@node3:~$ sudo docker exec -it 25ba8ad0a2b1 bash
+root@25ba8ad0a2b1:/# ping 192.168.1.10 -c 4
+PING 192.168.1.10 (192.168.1.10): 56 data bytes
+64 bytes from 192.168.1.10: icmp_seq=0 ttl=62 time=81.996 ms
+64 bytes from 192.168.1.10: icmp_seq=1 ttl=62 time=80.626 ms
+64 bytes from 192.168.1.10: icmp_seq=2 ttl=62 time=78.060 ms
+64 bytes from 192.168.1.10: icmp_seq=3 ttl=62 time=76.859 ms
+--- 192.168.1.10 ping statistics ---
+4 packets transmitted, 4 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 76.859/79.385/81.996/2.031 ms
+```
+
 License
 -------
 
@@ -605,5 +616,6 @@ Larry Smith Jr.
 - mrlesmithjr [at] gmail.com
 
 [Ansible]: <https://ansible.com>
+[Docker]: <https://www.docker.com/>
 [Vagrant]: <https://www.vagrantup.com/>
 [VirtualBox]: <https://www.virtualbox.org/>

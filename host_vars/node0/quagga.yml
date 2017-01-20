@@ -31,6 +31,14 @@ quagga_interfaces_lo:
   #   address: '10.0.0.12/32'
   #   method: 'static'
   #   configure: false
+
+# Defines if host faces the internet and is used as the default route to other
+# hosts to get to the internet. By setting this to true, an iptables masquerade
+# rule will be created.
+quagga_internet_gateway: true
+quagga_internet_gateway_info:
+  ext_int: 'enp0s3' # Define interface which faces the internet
+
 quagga_ospf_area_config:
   - network: '192.168.1.0/24'
     area: '{{ quagga_ospf_area }}'
