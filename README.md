@@ -76,9 +76,9 @@ default via 10.0.2.2 dev enp0s3
 192.168.40.0/24 via 192.168.1.19 dev enp0s9  proto zebra
 192.168.50.0/24 via 192.168.1.18 dev enp0s9  proto zebra
 192.168.60.0/24 via 192.168.1.19 dev enp0s9  proto zebra
-192.168.250.0/24 dev enp0s8  proto kernel  scope link  src 192.168.250.10```
-Now enter the `vtysh` shell and run some additional validations:
+192.168.250.0/24 dev enp0s8  proto kernel  scope link  src 192.168.250.10
 ```
+Now enter the `vtysh` shell and run some additional validations:
 ```
 sudo vtysh
 ```
@@ -368,6 +368,7 @@ following nodes participate in the cluster:
 
 ```
 vagrant ssh node3
+```
 ```
 vagrant@node3:~$ sudo docker node ls
 ID                           HOSTNAME  STATUS  AVAILABILITY  MANAGER STATUS
