@@ -26,7 +26,7 @@ quagga_interfaces_lo:
 # Defines if host faces the internet and is used as the default route to other
 # hosts to get to the internet. By setting this to true, an iptables masquerade
 # rule will be created.
-quagga_internet_gateway: true
+quagga_internet_gateway: false
 quagga_internet_gateway_info:
   ext_int: '{{ ansible_default_ipv4.interface }}' # Define interface which faces the internet
 
