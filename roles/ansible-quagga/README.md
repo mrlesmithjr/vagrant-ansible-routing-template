@@ -19,6 +19,7 @@ quagga_bgp_router_configs: [] # Define BGP configurations for all router nodes
   #   local_as: '64512'
   #   neighbors:
   #     - neighbor: '192.168.1.11'
+  #       announce_default_route: false
   #       description: 'node1'
   #       remote_as: '64512'
   #       prefix_lists: # Define specific BGP neighbore prefix lists
@@ -26,6 +27,7 @@ quagga_bgp_router_configs: [] # Define BGP configurations for all router nodes
   #           direction: 'out' # define direction (in|out)
   #           orf: 'send' # Define outbound route filter (send|receive|both)
   #     - neighbor: '192.168.2.12'
+  #       announce_default_route: false
   #       description: 'node2'
   #       prefix_lists:
   #         - name: 'FILTER02-in'
@@ -62,6 +64,7 @@ quagga_bgp_router_configs: [] # Define BGP configurations for all router nodes
   #   local_as: '64512'
   #   neighbors:
   #     - neighbor: '192.168.1.10' # Peering with loopback address for iBGP
+  #       announce_default_route: false
   #       description: 'node0'
   #       remote_as: '64512'
   #       prefix_lists:
@@ -76,6 +79,7 @@ quagga_bgp_router_configs: [] # Define BGP configurations for all router nodes
   #   local_as: '64513'
   #   neighbors:
   #     - neighbor: '192.168.2.10'
+  #       announce_default_route: false
   #       description: 'node0'
   #       prefix_lists:
   #         - name: 'FILTER02-out'
@@ -99,6 +103,7 @@ quagga_bgp_router_configs: [] # Define BGP configurations for all router nodes
   #   local_as: '64514'
   #   neighbors:
   #     - neighbor: '192.168.3.10'
+  #       announce_default_route: false
   #       description: 'node0'
   #       remote_as: '64512'
   #   network_advertisements:  #networks to advertise
@@ -115,19 +120,98 @@ quagga_config_interfaces: false
 #makes it easy to disable auto routing in order to define your routes manually
 quagga_config_ospfd: false
 quagga_configs:
-  - 'daemons'
-  - 'debian.conf'
-  - 'vtysh.conf'
-  - 'zebra.conf'
+  - name: 'daemons'
+    group: 'root'
+    mode: 'u=rw,g=r,o=r'
+    owner: 'root'
+  - name: 'debian.conf'
+    group: 'quagga'
+    mode: 'u=rw,g=r,o=r'
+    owner: 'quagga'
+  - name: 'vtysh.conf'
+    group: 'quagga'
+    mode: 'u=rw,g=r,o=r'
+    owner: 'quagga'
+  - name: 'Quagga.conf'
+    group: 'quaggavty'
+    owner: 'root'
+    mode: 'u=rw,g=r,o='
+quagga_debugging:
+  bgp:
+    enabled: false
+    debug:
+      # - 'as4'
+      # - 'as4 segment'
+      - 'events'
+      # - 'filters'
+      # - 'fsm'
+      - 'keepalives'
+      - 'updates'
+      # - 'updates in'
+      # - 'updates out'
+      # - 'zebra'
+  ospf:
+    enabled: false
+    debug:
+      - 'event'
+      # - 'ism'
+      # - 'ism events'
+      # - 'ism status'
+      # - 'ism timers'
+      # - 'lsa'
+      # - 'lsa flooding'
+      # - 'lsa generate'
+      # - 'lsa install'
+      # - 'lsa refresh'
+      # - 'nsm'
+      # - 'nsm events'
+      # - 'nsm status'
+      # - 'nsm timers'
+      # - 'nssa'
+      # - 'packet all'
+      # - 'packet all detail'
+      # - 'packet all recv'
+      # - 'packet all send'
+      # - 'packet dd'
+      # - 'packet dd detail'
+      # - 'packet dd recv'
+      # - 'packet dd send'
+      # - 'packet hello'
+      # - 'packet hello detail'
+      # - 'packet hello recv'
+      # - 'packet hello send'
+      # - 'packet ls-ack'
+      # - 'packet ls-ack detail'
+      # - 'packet ls-ack recv'
+      # - 'packet ls-ack send'
+      # - 'packet ls-request'
+      # - 'packet ls-request detail'
+      # - 'packet ls-request recv'
+      # - 'packet ls-request send'
+      # - 'packet ls-update'
+      # - 'packet ls-update detail'
+      # - 'packet ls-update recv'
+      # - 'packet ls-update send'
+  zebra:
+    enabled: true
+    debug:
+      - 'events'
+      # - 'fpm'
+      - 'kernel'
+      # - 'packet'
+      # - 'packet recv'
+      # - 'packet send'
+      # - 'rib'
+      # - 'rib queue'
 
 # Defines if quagga_interfaces are defined within Quagga configuration or
 # /etc/network/interfaces.d/
 quagga_defined_interfaces: false
 
-quagga_hostname: '{{ ansible_hostname }}'
 quagga_enable_bgpd: false
 quagga_enable_ospfd: false
 quagga_enable_password: 'quagga' #define here or in group_vars/group
+quagga_hostname: '{{ ansible_hostname }}'
 
 # Define interfaces to configure if desired
 quagga_interfaces: []
@@ -150,6 +234,25 @@ quagga_interfaces: []
 # #   addl_settings:
 # #     - 'bond_master bond0'
 
+#define network bonds and settings if desired
+#https://help.ubuntu.com/community/UbuntuBonding
+quagga_interfaces_bonds: []
+  # - int: 'bond0'
+  #   address: '192.168.1.10'
+  #   cidr: '24'
+  #   comment: 'Network Bond'
+  #   configure: true
+  #   # gateway: '192.168.1.1'
+  #   method: 'static'
+  #   netmask: '255.255.255.0'
+  #   slaves:
+  #     - 'enp0s9'
+  #     - 'enp0s10'
+  #   primary: 'enp0s9'
+  #   addl_settings:
+  #     - 'bond_mode balance-alb'
+  #     - 'bond_miimon 100'
+
 # Define addresses to assign on loopback interface...Can be multiple as well
 # We are defining these as sub-interfaces on the loopback adapter lo
 quagga_interfaces_lo: []
@@ -166,6 +269,39 @@ quagga_interfaces_lo: []
   # #   method: 'static'
   # #   configure: false
 
+# Defines if host faces the internet and is used as the default route to other
+# hosts to get to the internet. By setting this to true, an iptables masquerade
+# rule will be created.
+quagga_internet_gateway: false
+quagga_internet_gateway_info:
+  ext_int: '{{ ansible_default_ipv4.interface }}' # Define interface which faces the internet
+quagga_ip_forwarding:
+  ipv4: true
+  ipv6: true
+quagga_logging:
+  facility:
+    enabled: false
+    facility: 'daemon' # auth|cron|daemon|kern|local0|local1|local2|local3|local4|local5|local6|local7|lpr|mail|news|syslog|user|uucp
+  file:
+    enabled: true
+    filename: '/var/log/quagga/zebra.log'
+    level: 'debugging' # alerts|critical|debugging|emergencies|errors|informational|notifications|warnings
+  monitor:
+    enabled: false
+    level: 'debugging' # alerts|critical|debugging|emergencies|errors|informational|notifications|warnings
+  record_priority: false
+  stdout:
+    enabled: false
+    level: 'debugging' # alerts|critical|debugging|emergencies|errors|informational|notifications|warnings
+  syslog:
+    enabled: false
+    level: 'debugging' # alerts|critical|debugging|emergencies|errors|informational|notifications|warnings
+  timestamp:
+    enabled: false
+    precision: 0 # 0-6
+  trap:
+    enabled: false
+    level: 'debugging' # alerts|critical|debugging|emergencies|errors|informational|notifications|warnings
 quagga_no_passive_int: [] # Define any interfaces to not advertise routes on
   # - 'eth0'
   # - 'eth1'

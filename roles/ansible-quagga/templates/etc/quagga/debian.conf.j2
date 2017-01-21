@@ -1,8 +1,4 @@
 #
-# If this option is set the /etc/init.d/quagga script automatically loads
-# the config via "vtysh -b" when the servers are started.
-# Check /etc/pam.d/quagga if you intend to use "vtysh"!
-#
 vtysh_enable=yes
 zebra_options=" --daemon -A 127.0.0.1 -P 2601 -u {{ quagga_user }} -g quagga --keep_kernel --retain"
 bgpd_options=" --daemon -A 127.0.0.1 -P 2605 -u {{ quagga_user }} -g quagga --retain -p 179"
