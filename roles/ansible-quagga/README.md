@@ -323,6 +323,9 @@ quagga_ospf_routerid: '{{ ansible_default_ipv4.address }}'  #defines the router 
 quagga_passive_int: []
 quagga_password: 'quagga' #define in group_vars/all/accounts
 quagga_root_dir: '/etc/quagga'
+quagga_static_routes: [] # Define any static routes
+  # - destination: '192.168.60.0/24'
+  #   next_hop: '192.168.20.16' # Define IP or outbound interface 'enp0s9'
 quagga_sysctl_network_settings:
   - name: 'net.ipv4.ip_forward'
     value: '1'

@@ -1,7 +1,7 @@
 ---
 # defaults file for ansible-quagga
 quagga_bgp_router_configs: [] # Define BGP configurations for all router nodes
-  # - name: 'node0'
+  # - name: 'node0' # Define inventory hostname to configure as defined
   #   local_as: '64512'
   #   neighbors:
   #     - neighbor: '192.168.1.11'
@@ -309,6 +309,9 @@ quagga_ospf_routerid: '{{ ansible_default_ipv4.address }}'  #defines the router 
 quagga_passive_int: []
 quagga_password: 'quagga' #define in group_vars/all/accounts
 quagga_root_dir: '/etc/quagga'
+quagga_static_routes: [] # Define any static routes
+  # - destination: '192.168.60.0/24'
+  #   next_hop: '192.168.20.16' # Define IP or outbound interface 'enp0s9'
 quagga_sysctl_network_settings:
   - name: 'net.ipv4.ip_forward'
     value: '1'

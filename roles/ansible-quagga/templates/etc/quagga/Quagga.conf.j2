@@ -66,6 +66,12 @@ ip forwarding
 ipv6 forwarding
 {% endif %}
 !
+{% if quagga_static_routes is defined %}
+{%   for item in quagga_static_routes %}
+ip route {{ item.destination }} {{ item.next_hop }}
+{%   endfor %}
+{% endif %}
+!
 {% if quagga_config_bgpd is defined and quagga_config_bgpd %}
 {%   if quagga_bgp_router_configs is defined %}
 {%     for item in quagga_bgp_router_configs %}
