@@ -53,6 +53,12 @@ additional_disks_num = 1
 additional_disks_size = 10
 #Define if additional network adapters should be created (true|false)
 additional_nics = true
+#Define if add'l network adapters are auto configured addresses (true|false)
+additional_nics_auto_config = false
+#Define if additional network adapters should be DHCP assigned (true|false)
+additional_nics_dhcp = false
+#Define the number of additional nics to add
+additional_nics_num = 4
 # Define specific network assignments for nodes
 additional_nic_assignments = [
   {
@@ -63,7 +69,7 @@ additional_nic_assignments = [
     :node => "node0"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.1.10",
     :method => "static",
     :network_name => "spine-leaf-1",
@@ -77,21 +83,21 @@ additional_nic_assignments = [
     :node => "node1"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.1.11",
     :method => "static",
     :network_name => "spine-leaf-1",
     :node => "node1"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.2.11",
     :method => "static",
     :network_name => "spine-leaf-2",
     :node => "node1"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.10.11",
     :method => "static",
     :network_name => "compute-1",
@@ -105,21 +111,21 @@ additional_nic_assignments = [
     :node => "node2"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.1.12",
     :method => "static",
     :network_name => "spine-leaf-1",
     :node => "node2"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.2.12",
     :method => "static",
     :network_name => "spine-leaf-2",
     :node => "node2"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.20.12",
     :method => "static",
     :network_name => "compute-2",
@@ -133,14 +139,14 @@ additional_nic_assignments = [
     :node => "node3"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.10.13",
     :method => "static",
     :network_name => "compute-1",
     :node => "node3"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.30.13",
     :method => "static",
     :network_name => "workloads-3",
@@ -154,14 +160,14 @@ additional_nic_assignments = [
     :node => "node4"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.20.14",
     :method => "static",
     :network_name => "compute-2",
     :node => "node4"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.40.14",
     :method => "static",
     :network_name => "workloads-4",
@@ -175,14 +181,14 @@ additional_nic_assignments = [
     :node => "node5"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.10.15",
     :method => "static",
     :network_name => "compute-1",
     :node => "node5"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.50.15",
     :method => "static",
     :network_name => "workloads-5",
@@ -196,14 +202,14 @@ additional_nic_assignments = [
     :node => "node6"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.20.16",
     :method => "static",
     :network_name => "compute-2",
     :node => "node6"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.60.16",
     :method => "static",
     :network_name => "workloads-6",
@@ -217,7 +223,7 @@ additional_nic_assignments = [
     :node => "node7"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.2.17",
     :method => "static",
     :network_name => "spine-leaf-2",
@@ -231,21 +237,21 @@ additional_nic_assignments = [
     :node => "node8"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.1.18",
     :method => "static",
     :network_name => "spine-leaf-1",
     :node => "node8"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.2.18",
     :method => "static",
     :network_name => "spine-leaf-2",
     :node => "node8"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.10.18",
     :method => "static",
     :network_name => "compute-1",
@@ -259,33 +265,27 @@ additional_nic_assignments = [
     :node => "node9"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.1.19",
     :method => "static",
     :network_name => "spine-leaf-1",
     :node => "node9"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.2.19",
     :method => "static",
     :network_name => "spine-leaf-2",
     :node => "node9"
   },
   {
-    :auto_config => false,
+    :auto_config => additional_nics_auto_config,
     :ip => "192.168.20.19",
     :method => "static",
     :network_name => "compute-2",
     :node => "node9"
   }
 ]
-#Define if add'l network adapters are auto configured addresses (true|false)
-additional_nics_auto_config = true
-#Define if additional network adapters should be DHCP assigned (true|false)
-additional_nics_dhcp = false
-#Define the number of additional nics to add
-additional_nics_num = 4
 ansible_groups = {
   "spines" => ["node0", "node7"],
   "leafs" => ["node[1:2]", "node[8:9]"],
