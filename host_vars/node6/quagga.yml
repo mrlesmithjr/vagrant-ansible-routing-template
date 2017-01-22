@@ -23,6 +23,10 @@ quagga_interfaces_lo:
     address: '{{ quagga_node_info.node6.router_id }}/32'
     method: 'static'
     configure: true
+  - int: "lo{{ ':'}}1"
+    address: '{{ anycast_service_vip_1 }}'
+    method: 'static'
+    configure: true
 quagga_ospf_area_config:
   - network: '192.168.3.0/24'
     area: '{{ quagga_ospf_area }}'

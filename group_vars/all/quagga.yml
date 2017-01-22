@@ -1,4 +1,5 @@
 ---
+anycast_service_vip_1: '172.16.200.101'
 quagga_bgp_as_groups:
   compute_1: '64513'
   compute_2: '64514'

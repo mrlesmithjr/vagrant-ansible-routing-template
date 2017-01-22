@@ -78,6 +78,7 @@ quagga_bgp_router_configs:
         description: 'leaf-1-node8'
         remote_as: '{{ quagga_bgp_as_groups.leaf_1 }}'
     network_advertisements:  #networks to advertise
+      - '{{ anycast_service_vip_1 }}/32'
       - '192.168.30.0/24'
     router_id: '{{ quagga_node_info.node3.router_id }}'
   - name: 'node4'
@@ -92,6 +93,7 @@ quagga_bgp_router_configs:
         description: 'leaf-2-node9'
         remote_as: '{{ quagga_bgp_as_groups.leaf_2 }}'
     network_advertisements:  #networks to advertise
+      - '{{ anycast_service_vip_1 }}/32'
       - '192.168.40.0/24'
     router_id: '{{ quagga_node_info.node4.router_id }}'
   - name: 'node5'
@@ -106,6 +108,7 @@ quagga_bgp_router_configs:
         description: 'leaf-1-node8'
         remote_as: '{{ quagga_bgp_as_groups.leaf_1 }}'
     network_advertisements:  #networks to advertise
+      - '{{ anycast_service_vip_1 }}/32'
       - '192.168.50.0/24'
     router_id: '{{ quagga_node_info.node5.router_id }}'
   - name: 'node6'
@@ -120,6 +123,7 @@ quagga_bgp_router_configs:
         description: 'leaf-2-node9'
         remote_as: '{{ quagga_bgp_as_groups.leaf_2 }}'
     network_advertisements:  #networks to advertise
+      - '{{ anycast_service_vip_1 }}/32'
       - '192.168.60.0/24'
     router_id: '{{ quagga_node_info.node6.router_id }}'
   - name: 'node7'

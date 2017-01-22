@@ -37,6 +37,14 @@ interface IP addresses.
 * node8 - 192.168.250.18
 * node9 - 192.168.250.19
 
+In addition, there is also an example [Anycast] address of `172.16.200.101` that
+has been configured to span the [Docker] hosts. This address could be used to
+access any [Docker] service that has been created within the swarm cluster. This
+address can also be thought of as a VIP which can be accessed externally without
+setting up an actual load balancer but rather just creating a DNS record which
+is configured to point to `172.16.200.101`. There are obviously many possibilities
+doing this in addition to the native [Docker Ingress] routing mesh.
+
 Requirements
 ------------
 
@@ -461,6 +469,8 @@ Larry Smith Jr.
 - mrlesmithjr [at] gmail.com
 
 [Ansible]: <https://ansible.com>
+[Anycast]: <https://en.wikipedia.org/wiki/Anycast>
 [Docker]: <https://www.docker.com/>
+[Docker Ingress]: <https://docs.docker.com/engine/swarm/ingress/>
 [Vagrant]: <https://www.vagrantup.com/>
 [VirtualBox]: <https://www.virtualbox.org/>
