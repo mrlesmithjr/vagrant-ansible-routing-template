@@ -7,6 +7,8 @@
     - role: ansible-bootstrap
     - role: ansible-base
     - role: ansible-quagga
+      tags:
+        - 'quagga'
   tasks:
     - name: installing packages
       apt:
