@@ -1,194 +1,194 @@
 ---
 quagga_bgp_router_configs:
   - name: 'node0'
-    local_as: '64512'
+    local_as: '{{ quagga_bgp_as_groups.spine_1 }}'
     neighbors:
-      - neighbor: '192.168.1.11'
+      - neighbor: '{{ quagga_node_info.node1.spine_1_ip }}'
         announce_default_route: false
         description: 'leaf-1-node1'
-        remote_as: '64513'
-      - neighbor: '192.168.1.12'
+        remote_as: '{{ quagga_bgp_as_groups.leaf_1 }}'
+      - neighbor: '{{ quagga_node_info.node2.spine_1_ip }}'
         announce_default_route: false
         description: 'leaf-2-node2'
-        remote_as: '64514'
-      - neighbor: '192.168.1.18'
+        remote_as: '{{ quagga_bgp_as_groups.leaf_2 }}'
+      - neighbor: '{{ quagga_node_info.node8.spine_1_ip }}'
         announce_default_route: false
         description: 'leaf-1-node8'
-        remote_as: '64513'
-      - neighbor: '192.168.1.19'
+        remote_as: '{{ quagga_bgp_as_groups.leaf_1 }}'
+      - neighbor: '{{ quagga_node_info.node9.spine_1_ip }}'
         announce_default_route: false
         description: 'leaf-2-node9'
-        remote_as: '64514'
+        remote_as: '{{ quagga_bgp_as_groups.leaf_2 }}'
     network_advertisements:  #networks to advertise
       - '192.168.1.0/24'
-    router_id: '10.0.0.10'
+    router_id: '{{ quagga_node_info.node0.router_id }}'
   - name: 'node1'
-    local_as: '64513'
+    local_as: '{{ quagga_bgp_as_groups.leaf_1 }}'
     neighbors:
-      - neighbor: '192.168.1.10'
+      - neighbor: '{{ quagga_node_info.node0.spine_1_ip }}'
         announce_default_route: false
         description: 'spine-1-node0'
-        remote_as: '64512'
-      - neighbor: '192.168.2.17'
+        remote_as: '{{ quagga_bgp_as_groups.spine_1 }}'
+      - neighbor: '{{ quagga_node_info.node7.spine_2_ip }}'
         announce_default_route: false
         description: 'spine-2-node7'
-        remote_as: '64515'
-      - neighbor: '192.168.10.13'
+        remote_as: '{{ quagga_bgp_as_groups.spine_2 }}'
+      - neighbor: '{{ quagga_node_info.node3.compute_1_ip }}'
         announce_default_route: false
         description: 'compute-1-node3'
-        remote_as: '64513'
-      - neighbor: '192.168.10.15'
+        remote_as: '{{ quagga_bgp_as_groups.compute_1 }}'
+      - neighbor: '{{ quagga_node_info.node5.compute_1_ip }}'
         announce_default_route: false
         description: 'compute-1-node5'
-        remote_as: '64513'
+        remote_as: '{{ quagga_bgp_as_groups.compute_1 }}'
     network_advertisements:  #networks to advertise
       - '192.168.10.0/24'
-    router_id: '10.1.1.11'
+    router_id: '{{ quagga_node_info.node1.router_id }}'
   - name: 'node2'
-    local_as: '64514'
+    local_as: '{{ quagga_bgp_as_groups.leaf_2 }}'
     neighbors:
-      - neighbor: '192.168.1.10'
+      - neighbor: '{{ quagga_node_info.node0.spine_1_ip }}'
         announce_default_route: false
         description: 'spine-1-node0'
-        remote_as: '64512'
-      - neighbor: '192.168.2.17'
+        remote_as: '{{ quagga_bgp_as_groups.spine_1 }}'
+      - neighbor: '{{ quagga_node_info.node7.spine_2_ip }}'
         announce_default_route: false
         description: 'spine-2-node7'
-        remote_as: '64515'
-      - neighbor: '192.168.20.14'
+        remote_as: '{{ quagga_bgp_as_groups.spine_2 }}'
+      - neighbor: '{{ quagga_node_info.node4.compute_2_ip }}'
         announce_default_route: false
         description: 'compute-2-node4'
-        remote_as: '64514'
-      - neighbor: '192.168.20.16'
+        remote_as: '{{ quagga_bgp_as_groups.compute_2 }}'
+      - neighbor: '{{ quagga_node_info.node6.compute_2_ip }}'
         announce_default_route: false
         description: 'compute-2-node6'
-        remote_as: '64514'
+        remote_as: '{{ quagga_bgp_as_groups.compute_2 }}'
     network_advertisements:  #networks to advertise
       - '192.168.20.0/24'
-    router_id: '10.2.2.12'
+    router_id: '{{ quagga_node_info.node2.router_id }}'
   - name: 'node3'
-    local_as: '64513'
+    local_as: '{{ quagga_bgp_as_groups.compute_1 }}'
     neighbors:
-      - neighbor: '192.168.10.11'
+      - neighbor: '{{ quagga_node_info.node1.compute_1_ip }}'
         announce_default_route: false
         description: 'leaf-1-node1'
-        remote_as: '64513'
-      - neighbor: '192.168.10.18'
+        remote_as: '{{ quagga_bgp_as_groups.leaf_1 }}'
+      - neighbor: '{{ quagga_node_info.node8.compute_1_ip }}'
         announce_default_route: false
         description: 'leaf-1-node8'
-        remote_as: '64513'
+        remote_as: '{{ quagga_bgp_as_groups.leaf_1 }}'
     network_advertisements:  #networks to advertise
       - '192.168.30.0/24'
-    router_id: '10.3.3.13'
+    router_id: '{{ quagga_node_info.node3.router_id }}'
   - name: 'node4'
-    local_as: '64514'
+    local_as: '{{ quagga_bgp_as_groups.compute_2 }}'
     neighbors:
-      - neighbor: '192.168.20.12'
+      - neighbor: '{{ quagga_node_info.node2.compute_2_ip }}'
         announce_default_route: false
         description: 'leaf-2-node2'
-        remote_as: '64514'
-      - neighbor: '192.168.20.19'
+        remote_as: '{{ quagga_bgp_as_groups.leaf_2 }}'
+      - neighbor: '{{ quagga_node_info.node9.compute_2_ip }}'
         announce_default_route: false
         description: 'leaf-2-node9'
-        remote_as: '64514'
+        remote_as: '{{ quagga_bgp_as_groups.leaf_2 }}'
     network_advertisements:  #networks to advertise
       - '192.168.40.0/24'
-    router_id: '10.4.4.14'
+    router_id: '{{ quagga_node_info.node4.router_id }}'
   - name: 'node5'
-    local_as: '64513'
+    local_as: '{{ quagga_bgp_as_groups.compute_1 }}'
     neighbors:
-      - neighbor: '192.168.10.11'
+      - neighbor: '{{ quagga_node_info.node1.compute_1_ip }}'
         announce_default_route: false
         description: 'leaf-1-node1'
-        remote_as: '64513'
-      - neighbor: '192.168.10.18'
+        remote_as: '{{ quagga_bgp_as_groups.leaf_1 }}'
+      - neighbor: '{{ quagga_node_info.node8.compute_1_ip }}'
         announce_default_route: false
         description: 'leaf-1-node8'
-        remote_as: '64513'
+        remote_as: '{{ quagga_bgp_as_groups.leaf_1 }}'
     network_advertisements:  #networks to advertise
       - '192.168.50.0/24'
-    router_id: '10.5.5.15'
+    router_id: '{{ quagga_node_info.node5.router_id }}'
   - name: 'node6'
-    local_as: '64514'
+    local_as: '{{ quagga_bgp_as_groups.compute_2 }}'
     neighbors:
-      - neighbor: '192.168.20.12'
+      - neighbor: '{{ quagga_node_info.node2.compute_2_ip }}'
         announce_default_route: false
         description: 'leaf-2-node2'
-        remote_as: '64514'
-      - neighbor: '192.168.20.19'
+        remote_as: '{{ quagga_bgp_as_groups.leaf_2 }}'
+      - neighbor: '{{ quagga_node_info.node9.compute_2_ip }}'
         announce_default_route: false
         description: 'leaf-2-node9'
-        remote_as: '64514'
+        remote_as: '{{ quagga_bgp_as_groups.leaf_2 }}'
     network_advertisements:  #networks to advertise
       - '192.168.60.0/24'
-    router_id: '10.6.6.16'
+    router_id: '{{ quagga_node_info.node6.router_id }}'
   - name: 'node7'
-    local_as: '64515'
+    local_as: '{{ quagga_bgp_as_groups.spine_2 }}'
     description: 'spine-1-node7'
     neighbors:
-      - neighbor: '192.168.2.11'
+      - neighbor: '{{ quagga_node_info.node1.spine_2_ip }}'
         announce_default_route: false
         description: 'leaf-1-node1'
-        remote_as: '64513'
-      - neighbor: '192.168.2.12'
+        remote_as: '{{ quagga_bgp_as_groups.leaf_1 }}'
+      - neighbor: '{{ quagga_node_info.node2.spine_2_ip }}'
         announce_default_route: false
         description: 'leaf-2-node2'
-        remote_as: '64514'
-      - neighbor: '192.168.2.18'
+        remote_as: '{{ quagga_bgp_as_groups.leaf_2 }}'
+      - neighbor: '{{ quagga_node_info.node8.spine_2_ip }}'
         announce_default_route: false
         description: 'leaf-1-node8'
-        remote_as: '64513'
-      - neighbor: '192.168.2.19'
+        remote_as: '{{ quagga_bgp_as_groups.leaf_1 }}'
+      - neighbor: '{{ quagga_node_info.node9.spine_2_ip }}'
         announce_default_route: false
         description: 'leaf-2-node9'
-        remote_as: '64514'
+        remote_as: '{{ quagga_bgp_as_groups.leaf_2 }}'
     network_advertisements:  #networks to advertise
       - '192.168.2.0/24'
-    router_id: '10.7.7.17'
+    router_id: '{{ quagga_node_info.node7.router_id }}'
   - name: 'node8'
-    local_as: '64513'
+    local_as: '{{ quagga_bgp_as_groups.leaf_1 }}'
     neighbors:
-      - neighbor: '192.168.1.10'
+      - neighbor: '{{ quagga_node_info.node0.spine_1_ip }}'
         announce_default_route: false
         description: 'spine-1-node0'
-        remote_as: '64512'
-      - neighbor: '192.168.2.17'
+        remote_as: '{{ quagga_bgp_as_groups.spine_1 }}'
+      - neighbor: '{{ quagga_node_info.node7.spine_2_ip }}'
         announce_default_route: false
         description: 'spine-2-node7'
-        remote_as: '64515'
-      - neighbor: '192.168.10.13'
+        remote_as: '{{ quagga_bgp_as_groups.spine_2 }}'
+      - neighbor: '{{ quagga_node_info.node3.compute_1_ip }}'
         announce_default_route: false
         description: 'compute-1-node3'
-        remote_as: '64513'
-      - neighbor: '192.168.10.15'
+        remote_as: '{{ quagga_bgp_as_groups.compute_1 }}'
+      - neighbor: '{{ quagga_node_info.node5.compute_1_ip }}'
         announce_default_route: false
         description: 'compute-1-node5'
-        remote_as: '64513'
+        remote_as: '{{ quagga_bgp_as_groups.compute_1 }}'
     network_advertisements:  #networks to advertise
       - '192.168.10.0/24'
-    router_id: '10.8.8.18'
+    router_id: '{{ quagga_node_info.node8.router_id }}'
   - name: 'node9'
-    local_as: '64514'
+    local_as: '{{ quagga_bgp_as_groups.leaf_2 }}'
     neighbors:
-      - neighbor: '192.168.1.10'
+      - neighbor: '{{ quagga_node_info.node0.spine_1_ip }}'
         announce_default_route: false
         description: 'spine-1-node0'
-        remote_as: '64512'
-      - neighbor: '192.168.2.17'
+        remote_as: '{{ quagga_bgp_as_groups.spine_1 }}'
+      - neighbor: '{{ quagga_node_info.node7.spine_2_ip }}'
         announce_default_route: false
         description: 'spine-2-node7'
-        remote_as: '64515'
-      - neighbor: '192.168.20.14'
+        remote_as: '{{ quagga_bgp_as_groups.spine_2 }}'
+      - neighbor: '{{ quagga_node_info.node4.compute_2_ip }}'
         announce_default_route: false
         description: 'compute-2-node4'
-        remote_as: '64514'
-      - neighbor: '192.168.20.16'
+        remote_as: '{{ quagga_bgp_as_groups.compute_2 }}'
+      - neighbor: '{{ quagga_node_info.node6.compute_2_ip }}'
         announce_default_route: false
         description: 'compute-2-node6'
-        remote_as: '64514'
+        remote_as: '{{ quagga_bgp_as_groups.compute_2 }}'
     network_advertisements:  #networks to advertise
       - '192.168.20.0/24'
-    router_id: '10.9.9.19'
+    router_id: '{{ quagga_node_info.node9.router_id }}'
 quagga_config_bgpd: true #defines if quagga bgpd should be configured based on quagga_bgp_router_configs...makes it easy to disable auto routing in order to define your routes manually
 quagga_config_interfaces: true
 quagga_config_ospfd: false  #defines if quagga ospfd should be configured based on quagga_ospf_ vars...makes it easy to disable auto routing in order to define your routes manually

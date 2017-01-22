@@ -3,7 +3,7 @@ quagga_interfaces:
   - int: 'enp0s9'
     configure: true
     method: 'static'
-    address: '192.168.20.14'
+    address: '{{ quagga_node_info.node4.compute_2_ip }}'
     # gateway: '10.1.1.1'
     cidr: '24'
     netmask: '255.255.255.0'
@@ -12,7 +12,7 @@ quagga_interfaces:
   - int: 'enp0s10'
     configure: true
     method: 'static'
-    address: '192.168.40.14'
+    address: '{{ quagga_node_info.node4.workloads_4_ip }}'
     # gateway: '10.1.1.1'
     cidr: '24'
     netmask: '255.255.255.0'
@@ -20,10 +20,13 @@ quagga_interfaces:
   #     - 'bond_master bond0
 quagga_interfaces_lo:
   - int: "lo{{ ':' }}0"
-    address: '10.4.4.14/32'
+    address: '{{ quagga_node_info.node4.router_id }}/32'
     method: 'static'
     configure: true
 quagga_ospf_area_config:
   - network: '192.168.3.0/24'
     area: '{{ quagga_ospf_area }}'
-quagga_ospf_routerid: '10.4.4.14'
+quagga_ospf_routerid: '{{ quagga_node_info.node4.router_id }}'
+quagga_static_routes: # Define any static routes
+  - destination: '192.168.60.0/24'
+    next_hop: '{{ quagga_node_info.node6.compute_2_ip }}' # Define IP or outbound interface 'enp0s9'

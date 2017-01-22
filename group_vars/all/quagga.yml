@@ -1,0 +1,51 @@
+---
+quagga_bgp_as_groups:
+  compute_1: '64513'
+  compute_2: '64514'
+  leaf_1: '64513'
+  leaf_2: '64514'
+  spine_1: '64512'
+  spine_2: '64515'
+quagga_node_info:
+  node0:
+    router_id: '10.0.0.10'
+    spine_1_ip: '192.168.1.10'
+  node1:
+    compute_1_ip: '192.168.10.11'
+    router_id: '10.1.1.11'
+    spine_1_ip: '192.168.1.11'
+    spine_2_ip: '192.168.2.11'
+  node2:
+    compute_2_ip: '192.168.20.12'
+    router_id: '10.2.2.12'
+    spine_1_ip: '192.168.1.12'
+    spine_2_ip: '192.168.2.12'
+  node3:
+    compute_1_ip: '192.168.10.13'
+    router_id: '10.3.3.13'
+    workloads_3_ip: '192.168.30.13'
+  node4:
+    compute_2_ip: '192.168.20.14'
+    router_id: '10.4.4.14'
+    workloads_4_ip: '192.168.40.14'
+  node5:
+    compute_1_ip: '192.168.10.15'
+    router_id: '10.5.5.15'
+    workloads_5_ip: '192.168.50.15'
+  node6:
+    compute_2_ip: '192.168.20.16'
+    router_id: '10.6.6.16'
+    workloads_6_ip: '192.168.60.16'
+  node7:
+    router_id: '10.7.7.17'
+    spine_2_ip: '192.168.2.17'
+  node8:
+    compute_1_ip: '192.168.10.18'
+    router_id: '10.8.8.18'
+    spine_1_ip: '192.168.1.18'
+    spine_2_ip: '192.168.2.18'
+  node9:
+    compute_2_ip: '192.168.20.19'
+    router_id: '10.9.9.19'
+    spine_1_ip: '192.168.1.19'
+    spine_2_ip: '192.168.2.19'

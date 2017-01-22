@@ -3,7 +3,7 @@ quagga_interfaces:
   - int: 'enp0s9'
     configure: true
     method: 'static'
-    address: '192.168.1.18'
+    address: '{{ quagga_node_info.node8.spine_1_ip }}'
     # gateway: '10.1.1.1'
     cidr: '24'
     netmask: '255.255.255.0'
@@ -12,7 +12,7 @@ quagga_interfaces:
   - int: 'enp0s10'
     configure: true
     method: 'static'
-    address: '192.168.2.18'
+    address: '{{ quagga_node_info.node8.spine_2_ip }}'
     # gateway: '10.1.1.1'
     cidr: '24'
     netmask: '255.255.255.0'
@@ -21,7 +21,7 @@ quagga_interfaces:
   - int: 'enp0s16'
     configure: true
     method: 'static'
-    address: '192.168.10.18'
+    address: '{{ quagga_node_info.node8.compute_1_ip }}'
     # gateway: '10.1.1.1'
     cidr: '24'
     netmask: '255.255.255.0'
@@ -29,10 +29,10 @@ quagga_interfaces:
   #     - 'bond_master bond0'
 quagga_interfaces_lo:
   - int: "lo{{ ':' }}0"
-    address: '10.8.8.18/32'
+    address: '{{ quagga_node_info.node8.router_id }}/32'
     method: 'static'
     configure: true
 quagga_ospf_area_config:
   - network: '192.168.1.0/24'
     area: '{{ quagga_ospf_area }}'
-quagga_ospf_routerid: '10.8.8.18'
+quagga_ospf_routerid: '{{ quagga_node_info.node8.router_id }}'

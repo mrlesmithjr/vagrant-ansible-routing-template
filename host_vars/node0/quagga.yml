@@ -3,7 +3,7 @@ quagga_interfaces:
   - int: 'enp0s9'
     configure: true
     method: 'static'
-    address: '192.168.1.10'
+    address: '{{ quagga_node_info.node0.spine_1_ip }}'
     # gateway: '10.1.1.1'
     cidr: '24'
     netmask: '255.255.255.0'
@@ -11,7 +11,7 @@ quagga_interfaces:
   #     - 'bond_master bond0'
 quagga_interfaces_lo:
   - int: "lo{{ ':' }}0"
-    address: '10.0.0.10/32'
+    address: '{{ quagga_node_info.node0.router_id }}/32'
     method: 'static'
     configure: true
   # - int: "lo{{ ':' }}1"
@@ -23,13 +23,6 @@ quagga_interfaces_lo:
   #   method: 'static'
   #   configure: false
 
-# Defines if host faces the internet and is used as the default route to other
-# hosts to get to the internet. By setting this to true, an iptables masquerade
-# rule will be created.
-quagga_internet_gateway: false
-quagga_internet_gateway_info:
-  ext_int: '{{ ansible_default_ipv4.interface }}' # Define interface which faces the internet
-
 quagga_ospf_area_config:
   - network: '192.168.1.0/24'
     area: '{{ quagga_ospf_area }}'
@@ -37,4 +30,4 @@ quagga_ospf_area_config:
     area: '{{ quagga_ospf_area }}'
   - network: '192.168.3.0/24'
     area: '{{ quagga_ospf_area }}'
-quagga_ospf_routerid: '10.0.0.10'
+quagga_ospf_routerid: '{{ quagga_node_info.node0.router_id }}'
