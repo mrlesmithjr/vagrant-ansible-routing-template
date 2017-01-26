@@ -1,60 +1,42 @@
 ---
-# - hosts: quagga-routers
-#   remote_user: vagrant
-#   become: true
-#   vars:
-#   roles:
-#     - role: ansible-bootstrap
-#     - role: ansible-base
-#     - role: ansible-quagga
-#       tags:
-#         - 'quagga'
-#   tasks:
-#     - name: installing packages
-#       apt:
-#         name: "{{ item }}"
-#         state: "present"
-#       with_items:
-#         - 'traceroute'
-#
-# - hosts: compute-nodes
-#   remote_user: vagrant
-#   become: true
-#   vars:
-#   roles:
-#     - role: ansible-docker
-#
-# - hosts: docker-swarm
-#   remote_user: vagrant
-#   become: true
-#   vars:
-#   pre_tasks:
-#      # Checking for BGP network to be successfully up and running.
-#      # We do these checks to the Spines from each Docker swarm node.
-#     - name: Giving BGP Time To Come Up
-#       wait_for:
-#         host: "{{ item }}"
-#         port: 22
-#       with_items:
-#         - '192.168.1.10'
-#         - '192.168.2.17'
-#   roles:
-#     - role: ansible-docker-swarm
-
-- hosts: localhost
-  become: false
+- hosts: quagga-routers
+  remote_user: vagrant
+  become: true
   vars:
-    generate_mininet_configs: true
-    mininet_config_dir: './mininet_configs'
+  roles:
+    - role: ansible-bootstrap
+    - role: ansible-base
+    - role: ansible-quagga
+      tags:
+        - 'quagga'
   tasks:
-    - name: Ensuring Mininet Config Folder Exists
-      file:
-        path: "{{ mininet_config_dir }}"
-        state: "directory"
-      when: generate_mininet_configs
+    - name: installing packages
+      apt:
+        name: "{{ item }}"
+        state: "present"
+      with_items:
+        - 'traceroute'
 
-    - name: Generating Mininet Configs
-      template:
-        src: "./mininet.cfg.j2"
-        dest: "{{ mininet_config_dir }}/{{ item.name }}_quagga.conf"
-      with_items: '{{ quagga_bgp_router_configs }}'
+- hosts: compute-nodes
+  remote_user: vagrant
+  become: true
+  vars:
+  roles:
+    - role: ansible-docker
+
+- hosts: docker-swarm
+  remote_user: vagrant
+  become: true
+  vars:
+  pre_tasks:
+     # Checking for BGP network to be successfully up and running.
+     # We do these checks to the Spines from each Docker swarm node.
+    - name: Giving BGP Time To Come Up
+      wait_for:
+        host: "{{ item }}"
+        port: 22
+      with_items:
+        - '192.168.1.10'
+        - '192.168.2.17'
+  roles:
+    - role: ansible-docker-swarm

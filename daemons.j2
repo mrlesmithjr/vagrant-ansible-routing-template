@@ -1,0 +1,27 @@
+#
+# BGP Daemon
+{% if not quagga_enable_bgpd %}
+bgpd=no
+{% elif quagga_enable_bgpd %}
+bgpd=yes
+{% endif %}
+
+# IS-IS Daemon
+isisd=no
+
+# OSPF Daemon
+{% if not quagga_enable_ospfd %}
+ospfd=no
+{% elif quagga_enable_ospfd %}
+ospfd=yes
+{% endif %}
+
+# OSPF IPv6 Daemon
+ospf6d=no
+
+# RIP Daemon
+ripd=no
+ripngd=no
+
+# Zebra Daemon (Main Quagga Process Daemon)
+zebra=no

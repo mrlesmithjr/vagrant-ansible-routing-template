@@ -1,0 +1,11 @@
+---
+- hosts: all
+  become: true
+  vars:
+    - pri_domain_name: 'test.vagrant.local'
+  roles:
+  tasks:
+    - name: Installing Mininet
+      apt:
+        name: "mininet"
+        state: "present"
