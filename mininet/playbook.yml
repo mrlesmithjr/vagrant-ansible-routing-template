@@ -2,10 +2,24 @@
 - hosts: all
   become: true
   vars:
-    - pri_domain_name: 'test.vagrant.local'
+    mininet_version: '2.2.1'
+    pri_domain_name: 'test.vagrant.local'
   roles:
   tasks:
-    - name: Installing Mininet
+    - name: Installing Pre-Reqs
       apt:
-        name: "mininet"
+        name: "{{ item }}"
         state: "present"
+      with_items:
+        - 'git'
+
+    - name: Cloning Mininet Repo
+      git:
+        repo: "https://github.com/mininet/mininet.git"
+        dest: "/opt/mininet"
+        version: "{{ mininet_version }}"
+
+    - name: Installing Mininet
+      command: "/opt/mininet/util/install.sh -nfv"
+      args:
+        creates: "/usr/local/bin/mn"
