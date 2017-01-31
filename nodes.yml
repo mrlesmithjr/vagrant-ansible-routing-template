@@ -1,0 +1,231 @@
+---
+- name: 'node0'
+  ansible_groups:
+    - 'spines'
+    - 'quagga-routers'
+  box: 'mrlesmithjr/xenial64'
+  desktop: false
+  # disks:
+  #   - size: '10'
+  #     controller: "SATA Controller"
+  #   - size: '10'
+  #     controller: "SATA Controller"
+  interfaces:
+    - ip: '192.168.250.10'
+      auto_config: true
+      method: 'static'
+    - ip: '192.168.1.10'
+      auto_config: false
+      method: 'static'
+      network_name: 'spine-leaf-1'
+  mem: '512'
+  vcpu: '1'
+  # port_forwards:
+  #   - guest: '80'
+  #     host: '8080'
+  #   - guest: '443'
+  #     host: '4433'
+- name: 'node1'
+  ansible_groups:
+    - 'leafs'
+    - 'quagga-routers'
+  box: 'mrlesmithjr/xenial64'
+  desktop: false
+  interfaces:
+    - ip: '192.168.250.11'
+      auto_config: true
+      method: 'static'
+    - ip: '192.168.1.11'
+      auto_config: false
+      method: 'static'
+      network_name: 'spine-leaf-1'
+    - ip: '192.168.2.11'
+      auto_config: false
+      method: 'static'
+      network_name: 'spine-leaf-2'
+    - ip: '192.168.10.11'
+      auto_config: false
+      method: 'static'
+      network_name: 'compute-1'
+  mem: '512'
+  vcpu: '1'
+- name: 'node2'
+  ansible_groups:
+    - 'leafs'
+    - 'quagga-routers'
+  box: 'mrlesmithjr/xenial64'
+  desktop: false
+  interfaces:
+    - ip: '192.168.250.12'
+      auto_config: true
+      method: 'static'
+    - ip: '192.168.1.12'
+      auto_config: false
+      method: 'static'
+      network_name: 'spine-leaf-1'
+    - ip: '192.168.2.12'
+      auto_config: false
+      method: 'static'
+      network_name: 'spine-leaf-2'
+    - ip: '192.168.20.12'
+      auto_config: false
+      method: 'static'
+      network_name: 'compute-2'
+  mem: '512'
+  vcpu: '1'
+- name: 'node3'
+  ansible_groups:
+    - 'compute-nodes'
+    - 'quagga-routers'
+    - 'docker-swarm'
+    - 'docker-swarm-managers'
+    - 'docker-swarm-workers'
+  box: 'mrlesmithjr/xenial64'
+  desktop: false
+  interfaces:
+    - ip: '192.168.250.13'
+      auto_config: true
+      method: 'static'
+    - ip: '192.168.10.13'
+      auto_config: false
+      method: 'static'
+      network_name: 'compute-1'
+    - ip: '192.168.30.13'
+      auto_config: false
+      method: 'static'
+      network_name: 'workloads-3'
+  mem: '1024'
+  vcpu: '1'
+- name: 'node4'
+  ansible_groups:
+    - 'compute-nodes'
+    - 'quagga-routers'
+    - 'docker-swarm'
+    - 'docker-swarm-managers'
+    - 'docker-swarm-workers'
+  box: 'mrlesmithjr/xenial64'
+  desktop: false
+  interfaces:
+    - ip: '192.168.250.14'
+      auto_config: true
+      method: 'static'
+    - ip: '192.168.20.14'
+      auto_config: false
+      method: 'static'
+      network_name: 'compute-2'
+    - ip: '192.168.40.14'
+      auto_config: false
+      method: 'static'
+      network_name: 'workloads-4'
+  mem: '1024'
+  vcpu: '1'
+- name: 'node5'
+  ansible_groups:
+    - 'compute-nodes'
+    - 'quagga-routers'
+    - 'docker-swarm'
+    - 'docker-swarm-managers'
+    - 'docker-swarm-workers'
+  box: 'mrlesmithjr/xenial64'
+  desktop: false
+  interfaces:
+    - ip: '192.168.250.15'
+      auto_config: true
+      method: 'static'
+    - ip: '192.168.10.15'
+      auto_config: false
+      method: 'static'
+      network_name: 'compute-1'
+    - ip: '192.168.50.15'
+      auto_config: false
+      method: 'static'
+      network_name: 'workloads-5'
+  mem: '1024'
+  vcpu: '1'
+- name: 'node6'
+  ansible_groups:
+    - 'compute-nodes'
+    - 'quagga-routers'
+    - 'docker-swarm'
+    - 'docker-swarm-managers'
+    - 'docker-swarm-workers'
+  box: 'mrlesmithjr/xenial64'
+  desktop: false
+  interfaces:
+    - ip: '192.168.250.16'
+      auto_config: true
+      method: 'static'
+    - ip: '192.168.20.16'
+      auto_config: false
+      method: 'static'
+      network_name: 'compute-2'
+    - ip: '192.168.60.16'
+      auto_config: false
+      method: 'static'
+      network_name: 'workloads-6'
+  mem: '1024'
+  vcpu: '1'
+- name: 'node7'
+  ansible_groups:
+    - 'spines'
+    - 'quagga-routers'
+  box: 'mrlesmithjr/xenial64'
+  desktop: false
+  interfaces:
+    - ip: '192.168.250.17'
+      auto_config: true
+      method: 'static'
+    - ip: '192.168.2.17'
+      auto_config: false
+      method: 'static'
+      network_name: 'spine-leaf-2'
+  mem: '512'
+  vcpu: '1'
+- name: 'node8'
+  ansible_groups:
+    - 'leafs'
+    - 'quagga-routers'
+  box: 'mrlesmithjr/xenial64'
+  desktop: false
+  interfaces:
+    - ip: '192.168.250.18'
+      auto_config: true
+      method: 'static'
+    - ip: '192.168.1.18'
+      auto_config: false
+      method: 'static'
+      network_name: 'spine-leaf-1'
+    - ip: '192.168.2.18'
+      auto_config: false
+      method: 'static'
+      network_name: 'spine-leaf-2'
+    - ip: '192.168.10.18'
+      auto_config: false
+      method: 'static'
+      network_name: 'compute-1'
+  mem: '512'
+  vcpu: '1'
+- name: 'node9'
+  ansible_groups:
+    - 'leafs'
+    - 'quagga-routers'
+  box: 'mrlesmithjr/xenial64'
+  desktop: false
+  interfaces:
+    - ip: '192.168.250.19'
+      auto_config: true
+      method: 'static'
+    - ip: '192.168.1.19'
+      auto_config: false
+      method: 'static'
+      network_name: 'spine-leaf-1'
+    - ip: '192.168.2.19'
+      auto_config: false
+      method: 'static'
+      network_name: 'spine-leaf-2'
+    - ip: '192.168.20.19'
+      auto_config: false
+      method: 'static'
+      network_name: 'compute-2'
+  mem: '512'
+  vcpu: '1'
